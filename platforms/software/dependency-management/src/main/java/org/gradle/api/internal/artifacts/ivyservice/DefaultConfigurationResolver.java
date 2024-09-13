@@ -56,6 +56,7 @@ import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.Depen
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.ResolvedArtifactSetResolver;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.ResolvedArtifactsGraphVisitor;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.ResolvedVariantCache;
+import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.VariantArtifactSetCache;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.VisitedArtifactResults;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.VisitedArtifactSet;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.VisitedFileDependencyResults;
@@ -139,6 +140,7 @@ public class DefaultConfigurationResolver implements ConfigurationResolver {
     private final ExternalModuleComponentResolverFactory externalResolverFactory;
     private final ProjectDependencyResolver projectDependencyResolver;
     private final DependencyLockingProvider dependencyLockingProvider;
+    private final VariantArtifactSetCache variantArtifactSetCache;
 
     public DefaultConfigurationResolver(
         DependencyGraphResolver dependencyGraphResolver,
@@ -164,7 +166,8 @@ public class DefaultConfigurationResolver implements ConfigurationResolver {
         List<ResolverProviderFactory> resolverFactories,
         ExternalModuleComponentResolverFactory externalResolverFactory,
         ProjectDependencyResolver projectDependencyResolver,
-        DependencyLockingProvider dependencyLockingProvider
+        DependencyLockingProvider dependencyLockingProvider,
+        VariantArtifactSetCache variantArtifactSetCache
     ) {
         this.dependencyGraphResolver = dependencyGraphResolver;
         this.repositoriesSupplier = repositoriesSupplier;
@@ -190,6 +193,7 @@ public class DefaultConfigurationResolver implements ConfigurationResolver {
         this.externalResolverFactory = externalResolverFactory;
         this.projectDependencyResolver = projectDependencyResolver;
         this.dependencyLockingProvider = dependencyLockingProvider;
+        this.variantArtifactSetCache = variantArtifactSetCache;
     }
 
     @Override
@@ -345,6 +349,7 @@ public class DefaultConfigurationResolver implements ConfigurationResolver {
         return new ResolvedArtifactsGraphVisitor(
             artifactsVisitor,
             artifactTypeRegistry,
+            variantArtifactSetCache,
             calculatedValueContainerFactory
         );
     }

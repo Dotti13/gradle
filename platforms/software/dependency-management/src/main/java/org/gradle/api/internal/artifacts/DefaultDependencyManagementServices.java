@@ -70,6 +70,7 @@ import org.gradle.api.internal.artifacts.ivyservice.projectmodule.ProjectDepende
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.DependencyGraphResolver;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.ResolvedArtifactSetResolver;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.ResolvedVariantCache;
+import org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact.VariantArtifactSetCache;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.graph.builder.DependencyGraphBuilder;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.result.AdhocHandlingComponentResultSerializer;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.result.AttributeContainerSerializer;
@@ -638,7 +639,8 @@ public class DefaultDependencyManagementServices implements DependencyManagement
             ExternalModuleComponentResolverFactory moduleDependencyResolverFactory,
             ProjectDependencyResolver projectDependencyResolver,
             DependencyLockingProvider dependencyLockingProvider,
-            AttributeDesugaring attributeDesugaring
+            AttributeDesugaring attributeDesugaring,
+            VariantArtifactSetCache variantArtifactSetCache
         ) {
             DefaultConfigurationResolver defaultResolver = new DefaultConfigurationResolver(
                 dependencyGraphResolver,
@@ -664,7 +666,8 @@ public class DefaultDependencyManagementServices implements DependencyManagement
                 resolverFactories,
                 moduleDependencyResolverFactory,
                 projectDependencyResolver,
-                dependencyLockingProvider
+                dependencyLockingProvider,
+                variantArtifactSetCache
             );
 
             return new ShortCircuitEmptyConfigurationResolver(

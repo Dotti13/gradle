@@ -16,8 +16,6 @@
 
 package org.gradle.api.internal.artifacts.ivyservice.resolveengine.artifact;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.gradle.api.capabilities.Capability;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.excludes.specs.ExcludeSpec;
 import org.gradle.api.internal.artifacts.ivyservice.resolveengine.graph.DependencyGraphEdge;
@@ -33,25 +31,29 @@ import org.gradle.internal.component.model.VariantGraphResolveState;
 import org.gradle.internal.model.CalculatedValueContainerFactory;
 
 import java.util.List;
-import java.util.function.LongFunction;
 
 /**
  * Adapts a {@link DependencyArtifactsVisitor} to a {@link DependencyGraphVisitor}. Calculates the artifacts contributed by each edge in the graph and forwards the results to the artifact visitor.
  */
 public class ResolvedArtifactsGraphVisitor implements DependencyGraphVisitor {
-    private int nextId;
-    private final Long2ObjectMap<ArtifactsForNode> artifactsByNodeId = new Long2ObjectOpenHashMap<>();
+
     private final DependencyArtifactsVisitor artifactResults;
     private final ArtifactTypeRegistry artifactTypeRegistry;
+    private final VariantArtifactSetCache artifactSetCache;
     private final CalculatedValueContainerFactory calculatedValueContainerFactory;
+
+    // State
+    private int nextId;
 
     public ResolvedArtifactsGraphVisitor(
         DependencyArtifactsVisitor artifactsBuilder,
         ArtifactTypeRegistry artifactTypeRegistry,
+        VariantArtifactSetCache artifactSetCache,
         CalculatedValueContainerFactory calculatedValueContainerFactory
     ) {
         this.artifactResults = artifactsBuilder;
         this.artifactTypeRegistry = artifactTypeRegistry;
+        this.artifactSetCache = artifactSetCache;
         this.calculatedValueContainerFactory = calculatedValueContainerFactory;
     }
 
@@ -62,15 +64,7 @@ public class ResolvedArtifactsGraphVisitor implements DependencyGraphVisitor {
 
     @Override
     public void visitEdges(DependencyGraphNode node) {
-        boolean hasTransitiveIncomingEdge = false;
-        for (DependencyGraphEdge dependency : node.getIncomingEdges()) {
-            hasTransitiveIncomingEdge |= dependency.isTransitive();
-            if (dependency.contributesArtifacts()) {
-                DependencyGraphNode parent = dependency.getFrom();
-                ArtifactsForNode artifacts = resolveVariantArtifacts(dependency, node);
-                artifactResults.visitArtifacts(parent, node, artifacts.artifactSetId, artifacts.artifactSet);
-            }
-        }
+        boolean hasTransitiveIncomingEdge = visitNonFileEdges(node);
 
         if (node.isRoot() || hasTransitiveIncomingEdge) {
             // Since file dependencies are not modeled as actual edges, we need to verify
@@ -82,44 +76,75 @@ public class ResolvedArtifactsGraphVisitor implements DependencyGraphVisitor {
         }
     }
 
-    @Override
-    public void finish(RootGraphNode root) {
-        artifactResults.finishArtifacts(root);
-        artifactsByNodeId.clear();
+    /**
+     * Visit all the non-file edges for the given node.
+     *
+     * @return true if there is a transitive incoming edge.
+     */
+    private boolean visitNonFileEdges(DependencyGraphNode node) {
+        boolean hasTransitiveIncomingEdge = false;
+
+        int implicitArtifactSetId = -1;
+        ArtifactSet implicitArtifactSet = null;
+
+        for (DependencyGraphEdge edge : node.getIncomingEdges()) {
+            hasTransitiveIncomingEdge |= edge.isTransitive();
+            if (edge.contributesArtifacts()) {
+
+                if (maybeVisitAdhocEdge(node, edge)) {
+                    // The artifacts for this node were modified by the dependency.
+                    // Do not use the implicit artifact set.
+                    continue;
+                }
+
+                // This is the implicit artifact set for this node.
+                // The dependency does not modify the artifacts.
+                if (implicitArtifactSet == null) {
+                    // We have not visited the implicit artifacts yet.
+                    implicitArtifactSetId = nextId++;
+                    implicitArtifactSet = artifactSetCache.computeIfAbsent(node.getOwner().getResolveState(), node.getResolveState());
+                }
+
+                artifactResults.visitArtifacts(edge.getFrom(), node, implicitArtifactSetId, implicitArtifactSet);
+            }
+        }
+
+        return hasTransitiveIncomingEdge;
     }
 
-    private ArtifactsForNode resolveVariantArtifacts(DependencyGraphEdge dependency, DependencyGraphNode toNode) {
-        ComponentGraphResolveState component = toNode.getOwner().getResolveState();
-        VariantGraphResolveState variant = toNode.getResolveState();
+    /**
+     * Process the given edge, and if it modifies the artifacts, visit the artifacts.
+     *
+     * @return true if this edge modifies the artifacts, meaning it is adhoc, and should
+     * not also contribute to the implicit artifact set.
+     */
+    private boolean maybeVisitAdhocEdge(DependencyGraphNode node, DependencyGraphEdge dependency) {
+        ComponentGraphResolveState component = node.getOwner().getResolveState();
+        VariantGraphResolveState variant = node.getResolveState();
 
         ImmutableAttributes attributes = dependency.getAttributes();
         List<IvyArtifactName> artifacts = dependency.getDependencyMetadata().getArtifacts();
         ExcludeSpec exclusions = dependency.getExclusions();
         List<Capability> requestedCapabilities = dependency.getDependencyMetadata().getSelector().getRequestedCapabilities();
 
-        // Do not share an ArtifactSet if the artifacts are modified by the dependency.
-        if (!artifacts.isEmpty() ||
-            !attributes.isEmpty() ||
-            !requestedCapabilities.isEmpty() ||
-            exclusions.mayExcludeArtifacts()
+        // If all dependency modifiers are empty, this edge does not produce an adhoc artifact set.
+        if (artifacts.isEmpty() &&
+            attributes.isEmpty() &&
+            requestedCapabilities.isEmpty() &&
+            !exclusions.mayExcludeArtifacts()
         ) {
-            int id = nextId++;
-            return new ArtifactsForNode(id, new VariantResolvingArtifactSet(component, variant, attributes, artifacts, exclusions, requestedCapabilities));
+            return false;
         }
 
-        return artifactsByNodeId.computeIfAbsent(toNode.getNodeId(), (LongFunction<ArtifactsForNode>) value -> {
-            int id = nextId++;
-            return new ArtifactsForNode(id, new VariantResolvingArtifactSet(component, variant, attributes, artifacts, exclusions, requestedCapabilities));
-        });
+        int id = nextId++;
+        VariantResolvingArtifactSet artifactSet = new VariantResolvingArtifactSet(component, variant, attributes, artifacts, exclusions, requestedCapabilities);
+        artifactResults.visitArtifacts(dependency.getFrom(), node, id, artifactSet);
+
+        return true;
     }
 
-    private static class ArtifactsForNode {
-        private final int artifactSetId;
-        private final ArtifactSet artifactSet;
-
-        ArtifactsForNode(int artifactSetId, ArtifactSet artifactSet) {
-            this.artifactSetId = artifactSetId;
-            this.artifactSet = artifactSet;
-        }
+    @Override
+    public void finish(RootGraphNode root) {
+        artifactResults.finishArtifacts(root);
     }
 }
