@@ -50,6 +50,7 @@ public class DefaultUrlArtifactRepository implements UrlArtifactRepository {
 
     @Override
     public URI getUrl() {
+        // TODO: Cache this resolved URL?
         return url == null ? null : fileResolver.resolveUri(url);
     }
 

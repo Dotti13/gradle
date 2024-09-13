@@ -174,6 +174,7 @@ public abstract class AbstractArtifactRepository implements ArtifactRepositoryIn
      * @return a dependency injecting instantiator, aware of services we want to expose
      */
     ImplicitInputsCapturingInstantiator createInjectorForMetadataSuppliers(final RepositoryTransport transport, InstantiatorFactory instantiatorFactory, final URI rootUri, final FileStore<String> externalResourcesFileStore) {
+        // TODO: Can we reuse this registry?
         ServiceRegistry serviceRegistry = ServiceRegistryBuilder.builder()
             .displayName("implicit inputs capturing instantiator services")
             .provider(new ServiceRegistrationProvider() {
