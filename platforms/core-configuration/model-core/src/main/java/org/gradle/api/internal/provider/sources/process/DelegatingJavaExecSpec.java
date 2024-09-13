@@ -137,18 +137,8 @@ interface DelegatingJavaExecSpec extends DelegatingBaseExecSpec, JavaExecSpec {
 
     @Nullable
     @Override
-    default List<String> getJvmArgs() {
+    default ListProperty<String> getJvmArgs() {
         return getDelegate().getJvmArgs();
-    }
-
-    @Override
-    default void setJvmArgs(@Nullable List<String> arguments) {
-        getDelegate().setJvmArgs(arguments);
-    }
-
-    @Override
-    default void setJvmArgs(@Nullable Iterable<?> arguments) {
-        getDelegate().setJvmArgs(arguments);
     }
 
     @Override

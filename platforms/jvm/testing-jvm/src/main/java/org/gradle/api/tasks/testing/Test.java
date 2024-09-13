@@ -44,6 +44,7 @@ import org.gradle.api.internal.tasks.testing.testng.TestNGTestFramework;
 import org.gradle.api.internal.tasks.testing.worker.TestWorker;
 import org.gradle.api.jvm.ModularitySpec;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
@@ -399,7 +400,7 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
      */
     @Override
     @ToBeReplacedByLazyProperty
-    public List<String> getJvmArgs() {
+    public ListProperty<String> getJvmArgs() {
         return forkOptions.getJvmArgs();
     }
 
@@ -410,22 +411,6 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
     @ToBeReplacedByLazyProperty
     public List<CommandLineArgumentProvider> getJvmArgumentProviders() {
         return forkOptions.getJvmArgumentProviders();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setJvmArgs(List<String> arguments) {
-        forkOptions.setJvmArgs(arguments);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setJvmArgs(Iterable<?> arguments) {
-        forkOptions.setJvmArgs(arguments);
     }
 
     /**

@@ -19,6 +19,7 @@ package org.gradle.process.internal;
 import org.gradle.api.Action;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.FileCollectionFactory;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.internal.file.PathToFileResolver;
 import org.gradle.internal.jvm.Jvm;
@@ -77,23 +78,13 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     }
 
     @Override
-    public List<String> getJvmArgs() {
-        return options.getJvmArgs();
-    }
-
-    @Override
-    public void setJvmArgs(List<String> arguments) {
-        options.setJvmArgs(arguments);
-    }
-
-    @Override
-    public void setJvmArgs(Iterable<?> arguments) {
-        options.setJvmArgs(arguments);
-    }
+    public abstract ListProperty<String> getJvmArgs();
 
     @Override
     public JavaForkOptions jvmArgs(Iterable<?> arguments) {
-        options.jvmArgs(arguments);
+        for (Object argument : arguments) {
+            getJvmArgs().add(argument.toString());
+        }
         return this;
     }
 
@@ -218,7 +209,7 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
             && normalized(getDefaultCharacterEncoding().getOrNull()).equals(normalized(options.getDefaultCharacterEncoding().getOrNull()))
             && getHeapSizeMb(getMinHeapSize().getOrNull()) >= getHeapSizeMb(options.getMinHeapSize().getOrNull())
             && getHeapSizeMb(getMaxHeapSize().getOrNull()) >= getHeapSizeMb(options.getMaxHeapSize().getOrNull())
-            && normalized(getJvmArgs()).containsAll(normalized(options.getJvmArgs()))
+            && normalized(getJvmArgs().getOrNull()).containsAll(normalized(options.getJvmArgs().getOrNull()))
             && containsAll(getSystemProperties(), options.getSystemProperties())
             && containsAll(getEnvironment(), options.getEnvironment())
             && getBootstrapClasspath().getFiles().containsAll(options.getBootstrapClasspath().getFiles());

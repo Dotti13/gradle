@@ -18,6 +18,7 @@ package org.gradle.process;
 
 import org.gradle.api.Action;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
@@ -28,7 +29,6 @@ import org.gradle.internal.HasInternalProtocol;
 import org.gradle.internal.instrumentation.api.annotations.ReplacesEagerProperty;
 import org.gradle.internal.instrumentation.api.annotations.ToBeReplacedByLazyProperty;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -106,28 +106,12 @@ public interface JavaForkOptions extends ProcessForkOptions {
      * Returns the extra arguments to use to launch the JVM for the process. Does not include system properties and the
      * minimum/maximum heap size.
      *
-     * @return The immutable list of arguments. Returns an empty list if there are no arguments.
+     * @return The list of arguments. Returns an empty list if there are no arguments.
      */
-    @ToBeReplacedByLazyProperty
-    @Nullable @Optional @Input
-    List<String> getJvmArgs();
-
-    /**
-     * Sets the extra arguments to use to launch the JVM for the process. System properties
-     * and minimum/maximum heap size are updated.
-     *
-     * @param arguments The arguments. Must not be null.
-     * @since 4.0
-     */
-    void setJvmArgs(@Nullable List<String> arguments);
-
-    /**
-     * Sets the extra arguments to use to launch the JVM for the process. System properties
-     * and minimum/maximum heap size are updated.
-     *
-     * @param arguments The arguments. Must not be null.
-     */
-    void setJvmArgs(@Nullable Iterable<?> arguments);
+    @Optional
+    @Input
+    @ReplacesEagerProperty(adapter = JvmArgsAdapter.class)
+    ListProperty<String> getJvmArgs();
 
     /**
      * Adds some arguments to use to launch the JVM for the process.

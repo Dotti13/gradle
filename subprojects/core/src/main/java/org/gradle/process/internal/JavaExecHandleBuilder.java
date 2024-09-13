@@ -162,18 +162,8 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     @Override
-    public List<String> getJvmArgs() {
+    public ListProperty<String> getJvmArgs() {
         return javaOptions.getJvmArgs();
-    }
-
-    @Override
-    public void setJvmArgs(List<String> arguments) {
-        javaOptions.setJvmArgs(arguments);
-    }
-
-    @Override
-    public void setJvmArgs(Iterable<?> arguments) {
-        javaOptions.setJvmArgs(arguments);
     }
 
     @Override

@@ -372,7 +372,8 @@ public class JvmOptions {
     }
 
     public void copyTo(JavaForkOptions target) {
-        target.setJvmArgs(extraJvmArgs);
+        target.getJvmArgs().empty();
+        target.jvmArgs(extraJvmArgs);
         target.setSystemProperties(mutableSystemProperties);
         target.getMinHeapSize().set(minHeapSize);
         target.getMaxHeapSize().set(maxHeapSize);

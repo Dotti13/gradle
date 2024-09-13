@@ -33,6 +33,7 @@ import org.gradle.api.internal.model.InstantiatorBackedObjectFactory;
 import org.gradle.api.internal.provider.PropertyHost;
 import org.gradle.api.internal.tasks.DefaultTaskDependencyFactory;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.util.PatternSet;
 import org.gradle.api.tasks.util.internal.PatternSets;
@@ -418,6 +419,8 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
             getMinHeapSize().disallowChanges();
             getMaxHeapSize().set(delegate.getMaxHeapSize());
             getMaxHeapSize().disallowChanges();
+            getJvmArgs().set(delegate.getJvmArgs());
+            getJvmArgs().disallowChanges();
         }
 
         @Override
@@ -515,19 +518,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         public abstract Property<String> getMaxHeapSize();
 
         @Override
-        public List<String> getJvmArgs() {
-            return ImmutableList.copyOf(delegate.getJvmArgs());
-        }
-
-        @Override
-        public void setJvmArgs(List<String> arguments) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void setJvmArgs(Iterable<?> arguments) {
-            throw new UnsupportedOperationException();
-        }
+        public abstract ListProperty<String> getJvmArgs();
 
         @Override
         public JavaForkOptions jvmArgs(Iterable<?> arguments) {

@@ -58,7 +58,7 @@ public class DaemonForkOptions {
                 .add("executable", forkOptions.getExecutable())
                 .add("minHeapSize", forkOptions.getMinHeapSize().getOrNull())
                 .add("maxHeapSize", forkOptions.getMaxHeapSize().getOrNull())
-                .add("jvmArgs", forkOptions.getJvmArgs())
+                .add("jvmArgs", forkOptions.getJvmArgs().getOrNull())
                 .add("keepAliveMode", keepAliveMode)
                 .toString();
     }

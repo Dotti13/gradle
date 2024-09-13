@@ -201,27 +201,8 @@ public abstract class JavaExec extends ConventionTask implements JavaExecSpec {
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public List<String> getJvmArgs() {
-        return javaExecSpec.getJvmArguments().getOrNull();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setJvmArgs(List<String> arguments) {
-        javaExecSpec.getJvmArguments().empty();
-        jvmArgs(arguments);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setJvmArgs(Iterable<?> arguments) {
-        javaExecSpec.getJvmArguments().empty();
-        jvmArgs(arguments);
+    public ListProperty<String> getJvmArgs() {
+        return javaExecSpec.getJvmArguments();
     }
 
     /**
