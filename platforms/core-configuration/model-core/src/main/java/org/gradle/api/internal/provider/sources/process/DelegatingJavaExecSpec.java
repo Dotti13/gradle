@@ -120,15 +120,9 @@ interface DelegatingJavaExecSpec extends DelegatingBaseExecSpec, JavaExecSpec {
         return this;
     }
 
-    @Nullable
     @Override
-    default String getDefaultCharacterEncoding() {
+    default Property<String> getDefaultCharacterEncoding() {
         return getDelegate().getDefaultCharacterEncoding();
-    }
-
-    @Override
-    default void setDefaultCharacterEncoding(@Nullable String defaultCharacterEncoding) {
-        getDelegate().setDefaultCharacterEncoding(defaultCharacterEncoding);
     }
 
     @Nullable

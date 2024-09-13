@@ -383,17 +383,8 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public String getDefaultCharacterEncoding() {
+    public Property<String> getDefaultCharacterEncoding() {
         return forkOptions.getDefaultCharacterEncoding();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
-        forkOptions.setDefaultCharacterEncoding(defaultCharacterEncoding);
     }
 
     /**

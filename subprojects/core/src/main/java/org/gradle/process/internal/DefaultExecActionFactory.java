@@ -33,6 +33,7 @@ import org.gradle.api.internal.model.InstantiatorBackedObjectFactory;
 import org.gradle.api.internal.provider.PropertyHost;
 import org.gradle.api.internal.tasks.DefaultTaskDependencyFactory;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.util.PatternSet;
 import org.gradle.api.tasks.util.internal.PatternSets;
 import org.gradle.initialization.BuildCancellationToken;
@@ -150,7 +151,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
 
     @Override
     public JavaForkOptionsInternal newJavaForkOptions() {
-        final DefaultJavaForkOptions forkOptions = new DefaultJavaForkOptions(fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
+        final DefaultJavaForkOptions forkOptions = objectFactory.newInstance(DefaultJavaForkOptions.class, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
         if (forkOptions.getExecutable() == null) {
             forkOptions.setExecutable(Jvm.current().getJavaExecutable());
         }
@@ -164,9 +165,9 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         // NOTE: We do not want/need a decorated version of JavaForkOptions or JavaDebugOptions because
         // these immutable instances are held across builds and will retain classloaders/services in the decorated object
         DefaultFileCollectionFactory fileCollectionFactory = new DefaultFileCollectionFactory(fileResolver, DefaultTaskDependencyFactory.withNoAssociatedProject(), new DefaultDirectoryFileTreeFactory(), nonCachingPatternSetFactory, PropertyHost.NO_OP, FileSystems.getDefault());
-        JavaForkOptionsInternal copy = new DefaultJavaForkOptions(fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
+        JavaForkOptionsInternal copy = objectFactory.newInstance(DefaultJavaForkOptions.class, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
         options.copyTo(copy);
-        return new ImmutableJavaForkOptions(copy);
+        return objectFactory.newInstance(ImmutableJavaForkOptions.class, copy);
     }
 
     public JavaExecAction newDecoratedJavaExecAction() {
@@ -406,11 +407,13 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
     }
 
-    private static class ImmutableJavaForkOptions implements JavaForkOptionsInternal {
+    private static abstract class ImmutableJavaForkOptions implements JavaForkOptionsInternal {
         private final JavaForkOptionsInternal delegate;
 
         public ImmutableJavaForkOptions(JavaForkOptionsInternal delegate) {
             this.delegate = delegate;
+            getDefaultCharacterEncoding().set(delegate.getDefaultCharacterEncoding());
+            getDefaultCharacterEncoding().disallowChanges();
         }
 
         @Override
@@ -469,9 +472,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public String getDefaultCharacterEncoding() {
-            return delegate.getDefaultCharacterEncoding();
-        }
+        public abstract Property<String> getDefaultCharacterEncoding();
 
         @Override
         public ProcessForkOptions workingDir(Object dir) {
@@ -485,11 +486,6 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
 
         @Override
         public void setEnvironment(Map<String, ?> environmentVariables) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
             throw new UnsupportedOperationException();
         }
 
@@ -636,6 +632,11 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         @Override
         public void checkDebugConfiguration(Iterable<?> arguments) {
             throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public JvmOptions toJvmOptions() {
+            return delegate.toJvmOptions();
         }
     }
 }

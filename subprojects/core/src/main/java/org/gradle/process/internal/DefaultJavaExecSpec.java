@@ -37,7 +37,7 @@ import java.util.List;
 import static org.gradle.process.internal.DefaultExecSpec.copyBaseExecSpecTo;
 
 
-public class DefaultJavaExecSpec extends DefaultJavaForkOptions implements JavaExecSpec, ProcessArgumentsSpec.HasExecutable {
+public abstract class DefaultJavaExecSpec extends DefaultJavaForkOptions implements JavaExecSpec, ProcessArgumentsSpec.HasExecutable {
 
     private boolean ignoreExitValue;
     private final ProcessStreamsSpec streamsSpec = new ProcessStreamsSpec();

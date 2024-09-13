@@ -331,17 +331,8 @@ public abstract class JavaExec extends ConventionTask implements JavaExecSpec {
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public String getDefaultCharacterEncoding() {
+    public Property<String> getDefaultCharacterEncoding() {
         return javaExecSpec.getDefaultCharacterEncoding();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
-        javaExecSpec.setDefaultCharacterEncoding(defaultCharacterEncoding);
     }
 
     /**

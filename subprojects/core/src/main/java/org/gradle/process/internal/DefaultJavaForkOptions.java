@@ -19,6 +19,7 @@ package org.gradle.process.internal;
 import org.gradle.api.Action;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.FileCollectionFactory;
+import org.gradle.api.provider.Property;
 import org.gradle.internal.file.PathToFileResolver;
 import org.gradle.internal.jvm.Jvm;
 import org.gradle.process.CommandLineArgumentProvider;
@@ -35,7 +36,7 @@ import static org.gradle.process.internal.util.MergeOptionsUtil.containsAll;
 import static org.gradle.process.internal.util.MergeOptionsUtil.getHeapSizeMb;
 import static org.gradle.process.internal.util.MergeOptionsUtil.normalized;
 
-public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements JavaForkOptionsInternal {
+public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions implements JavaForkOptionsInternal {
     private final JvmOptions options;
     private List<CommandLineArgumentProvider> jvmArgumentProviders;
 
@@ -43,6 +44,7 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
     public DefaultJavaForkOptions(PathToFileResolver resolver, FileCollectionFactory fileCollectionFactory, JavaDebugOptions debugOptions) {
         super(resolver);
         options = new JvmOptions(fileCollectionFactory, debugOptions);
+        getDefaultCharacterEncoding().convention(options.getDefaultCharacterEncoding());
     }
 
     @Override
@@ -168,14 +170,7 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
     }
 
     @Override
-    public String getDefaultCharacterEncoding() {
-        return options.getDefaultCharacterEncoding();
-    }
-
-    @Override
-    public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
-        options.setDefaultCharacterEncoding(defaultCharacterEncoding);
-    }
+    public abstract Property<String> getDefaultCharacterEncoding();
 
     @Override
     public boolean getEnableAssertions() {
@@ -234,7 +229,7 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
             && getEnableAssertions() == options.getEnableAssertions()
             && normalized(getExecutable()).equals(normalized(options.getExecutable()))
             && getWorkingDir().equals(options.getWorkingDir())
-            && normalized(getDefaultCharacterEncoding()).equals(normalized(options.getDefaultCharacterEncoding()))
+            && normalized(getDefaultCharacterEncoding().getOrNull()).equals(normalized(options.getDefaultCharacterEncoding().getOrNull()))
             && getHeapSizeMb(getMinHeapSize()) >= getHeapSizeMb(options.getMinHeapSize())
             && getHeapSizeMb(getMaxHeapSize()) >= getHeapSizeMb(options.getMaxHeapSize())
             && normalized(getJvmArgs()).containsAll(normalized(options.getJvmArgs()))
@@ -251,6 +246,11 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
     @Override
     public void setExtraJvmArgs(Iterable<?> arguments) {
         options.setExtraJvmArgs(arguments);
+    }
+
+    @Override
+    public JvmOptions toJvmOptions() {
+        return options;
     }
 
     private static boolean hasJvmArgumentProviders(JavaForkOptions forkOptions) {

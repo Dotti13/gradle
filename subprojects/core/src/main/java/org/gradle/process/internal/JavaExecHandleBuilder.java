@@ -242,13 +242,8 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     @Override
-    public String getDefaultCharacterEncoding() {
+    public Property<String> getDefaultCharacterEncoding() {
         return javaOptions.getDefaultCharacterEncoding();
-    }
-
-    @Override
-    public void setDefaultCharacterEncoding(String defaultCharacterEncoding) {
-        javaOptions.setDefaultCharacterEncoding(defaultCharacterEncoding);
     }
 
     @Override

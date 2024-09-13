@@ -18,12 +18,14 @@ package org.gradle.process;
 
 import org.gradle.api.Action;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.internal.HasInternalProtocol;
+import org.gradle.internal.instrumentation.api.annotations.ReplacesEagerProperty;
 import org.gradle.internal.instrumentation.api.annotations.ToBeReplacedByLazyProperty;
 
 import javax.annotation.Nullable;
@@ -73,20 +75,10 @@ public interface JavaForkOptions extends ProcessForkOptions {
      *
      * @return The default character encoding. Returns null if the {@link java.nio.charset.Charset#defaultCharset() default character encoding of this JVM} should be used.
      */
-    @ToBeReplacedByLazyProperty
-    @Nullable @Optional @Input
-    String getDefaultCharacterEncoding();
-
-    /**
-     * Sets the default character encoding to use.
-     *
-     * Note: Many JVM implementations support the setting of this attribute via system property on startup (namely, the {@code file.encoding} property). For JVMs
-     * where this is the case, setting the {@code file.encoding} property via {@link #setSystemProperties(java.util.Map)} or similar will have no effect as
-     * this value will be overridden by the value specified by {@link #getDefaultCharacterEncoding()}.
-     *
-     * @param defaultCharacterEncoding The default character encoding. Use null to use {@link java.nio.charset.Charset#defaultCharset() this JVM's default charset}
-     */
-     void setDefaultCharacterEncoding(@Nullable String defaultCharacterEncoding);
+    @Optional
+    @Input
+    @ReplacesEagerProperty
+    Property<String> getDefaultCharacterEncoding();
 
     /**
      * Returns the minimum heap size for the process, if any.
