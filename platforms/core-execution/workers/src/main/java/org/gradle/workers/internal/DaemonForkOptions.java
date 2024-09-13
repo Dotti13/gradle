@@ -56,7 +56,7 @@ public class DaemonForkOptions {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("executable", forkOptions.getExecutable())
-                .add("minHeapSize", forkOptions.getMinHeapSize())
+                .add("minHeapSize", forkOptions.getMinHeapSize().getOrNull())
                 .add("maxHeapSize", forkOptions.getMaxHeapSize())
                 .add("jvmArgs", forkOptions.getJvmArgs())
                 .add("keepAliveMode", keepAliveMode)

@@ -414,6 +414,8 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
             this.delegate = delegate;
             getDefaultCharacterEncoding().set(delegate.getDefaultCharacterEncoding());
             getDefaultCharacterEncoding().disallowChanges();
+            getMinHeapSize().set(delegate.getMinHeapSize());
+            getMinHeapSize().disallowChanges();
         }
 
         @Override
@@ -495,14 +497,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public String getMinHeapSize() {
-            return delegate.getMinHeapSize();
-        }
-
-        @Override
-        public void setMinHeapSize(String heapSize) {
-            throw new UnsupportedOperationException();
-        }
+        public abstract Property<String> getMinHeapSize();
 
         @Override
         public ProcessForkOptions environment(String name, Object value) {

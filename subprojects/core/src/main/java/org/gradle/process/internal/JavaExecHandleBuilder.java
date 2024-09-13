@@ -232,13 +232,8 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     @Override
-    public String getMinHeapSize() {
+    public Property<String> getMinHeapSize() {
         return javaOptions.getMinHeapSize();
-    }
-
-    @Override
-    public void setMinHeapSize(String heapSize) {
-        javaOptions.setMinHeapSize(heapSize);
     }
 
     @Override

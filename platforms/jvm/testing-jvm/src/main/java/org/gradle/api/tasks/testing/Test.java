@@ -374,8 +374,7 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public String getMinHeapSize() {
+    public Property<String> getMinHeapSize() {
         return forkOptions.getMinHeapSize();
     }
 
@@ -385,14 +384,6 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
     @Override
     public Property<String> getDefaultCharacterEncoding() {
         return forkOptions.getDefaultCharacterEncoding();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setMinHeapSize(String heapSize) {
-        forkOptions.setMinHeapSize(heapSize);
     }
 
     /**

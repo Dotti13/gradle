@@ -127,13 +127,8 @@ interface DelegatingJavaExecSpec extends DelegatingBaseExecSpec, JavaExecSpec {
 
     @Nullable
     @Override
-    default String getMinHeapSize() {
+    default Property<String> getMinHeapSize() {
         return getDelegate().getMinHeapSize();
-    }
-
-    @Override
-    default void setMinHeapSize(@Nullable String heapSize) {
-        getDelegate().setMinHeapSize(heapSize);
     }
 
     @Nullable

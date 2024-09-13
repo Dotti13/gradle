@@ -314,17 +314,8 @@ public abstract class JavaExec extends ConventionTask implements JavaExecSpec {
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public String getMinHeapSize() {
+    public Property<String> getMinHeapSize() {
         return javaExecSpec.getMinHeapSize();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setMinHeapSize(String heapSize) {
-        javaExecSpec.setMinHeapSize(heapSize);
     }
 
     /**

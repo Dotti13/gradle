@@ -85,17 +85,10 @@ public interface JavaForkOptions extends ProcessForkOptions {
      *
      * @return The minimum heap size. Returns null if the default minimum heap size should be used.
      */
-    @ToBeReplacedByLazyProperty
-    @Nullable @Optional @Input
-    String getMinHeapSize();
-
-    /**
-     * Sets the minimum heap size for the process.
-     * Supports the units megabytes (e.g. "512m") and gigabytes (e.g. "1g").
-     *
-     * @param heapSize The minimum heap size. Use null for the default minimum heap size.
-     */
-    void setMinHeapSize(@Nullable String heapSize);
+    @Optional
+    @Input
+    @ReplacesEagerProperty
+    Property<String> getMinHeapSize();
 
     /**
      * Returns the maximum heap size for the process, if any.

@@ -150,14 +150,7 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     }
 
     @Override
-    public String getMinHeapSize() {
-        return options.getMinHeapSize();
-    }
-
-    @Override
-    public void setMinHeapSize(String heapSize) {
-        options.setMinHeapSize(heapSize);
-    }
+    public abstract Property<String> getMinHeapSize();
 
     @Override
     public String getMaxHeapSize() {
@@ -230,7 +223,7 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
             && normalized(getExecutable()).equals(normalized(options.getExecutable()))
             && getWorkingDir().equals(options.getWorkingDir())
             && normalized(getDefaultCharacterEncoding().getOrNull()).equals(normalized(options.getDefaultCharacterEncoding().getOrNull()))
-            && getHeapSizeMb(getMinHeapSize()) >= getHeapSizeMb(options.getMinHeapSize())
+            && getHeapSizeMb(getMinHeapSize().getOrNull()) >= getHeapSizeMb(options.getMinHeapSize().getOrNull())
             && getHeapSizeMb(getMaxHeapSize()) >= getHeapSizeMb(options.getMaxHeapSize())
             && normalized(getJvmArgs()).containsAll(normalized(options.getJvmArgs()))
             && containsAll(getSystemProperties(), options.getSystemProperties())
