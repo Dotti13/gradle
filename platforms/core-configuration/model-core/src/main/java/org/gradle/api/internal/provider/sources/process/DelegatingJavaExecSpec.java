@@ -125,21 +125,14 @@ interface DelegatingJavaExecSpec extends DelegatingBaseExecSpec, JavaExecSpec {
         return getDelegate().getDefaultCharacterEncoding();
     }
 
-    @Nullable
     @Override
     default Property<String> getMinHeapSize() {
         return getDelegate().getMinHeapSize();
     }
 
-    @Nullable
     @Override
-    default String getMaxHeapSize() {
+    default Property<String> getMaxHeapSize() {
         return getDelegate().getMaxHeapSize();
-    }
-
-    @Override
-    default void setMaxHeapSize(@Nullable String heapSize) {
-        getDelegate().setMaxHeapSize(heapSize);
     }
 
     @Nullable

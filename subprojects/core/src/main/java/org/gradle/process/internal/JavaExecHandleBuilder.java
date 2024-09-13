@@ -242,13 +242,8 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     @Override
-    public String getMaxHeapSize() {
+    public Property<String> getMaxHeapSize() {
         return javaOptions.getMaxHeapSize();
-    }
-
-    @Override
-    public void setMaxHeapSize(String heapSize) {
-        javaOptions.setMaxHeapSize(heapSize);
     }
 
     @Override

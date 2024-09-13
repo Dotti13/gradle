@@ -82,6 +82,7 @@ public interface JavaForkOptions extends ProcessForkOptions {
 
     /**
      * Returns the minimum heap size for the process, if any.
+     * Supports the units megabytes (e.g. "512m") and gigabytes (e.g. "1g").
      *
      * @return The minimum heap size. Returns null if the default minimum heap size should be used.
      */
@@ -92,20 +93,14 @@ public interface JavaForkOptions extends ProcessForkOptions {
 
     /**
      * Returns the maximum heap size for the process, if any.
+     * Supports the units megabytes (e.g. "512m") and gigabytes (e.g. "1g").
      *
      * @return The maximum heap size. Returns null if the default maximum heap size should be used.
      */
-    @ToBeReplacedByLazyProperty
-    @Nullable @Optional @Input
-    String getMaxHeapSize();
-
-    /**
-     * Sets the maximum heap size for the process.
-     * Supports the units megabytes (e.g. "512m") and gigabytes (e.g. "1g").
-     *
-     * @param heapSize The heap size. Use null for the default maximum heap size.
-     */
-    void setMaxHeapSize(@Nullable String heapSize);
+    @Optional
+    @Input
+    @ReplacesEagerProperty
+    Property<String> getMaxHeapSize();
 
     /**
      * Returns the extra arguments to use to launch the JVM for the process. Does not include system properties and the

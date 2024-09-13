@@ -330,17 +330,8 @@ public abstract class JavaExec extends ConventionTask implements JavaExecSpec {
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public String getMaxHeapSize() {
+    public Property<String> getMaxHeapSize() {
         return javaExecSpec.getMaxHeapSize();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setMaxHeapSize(String heapSize) {
-        javaExecSpec.setMaxHeapSize(heapSize);
     }
 
     /**

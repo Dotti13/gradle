@@ -390,17 +390,8 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public String getMaxHeapSize() {
+    public Property<String> getMaxHeapSize() {
         return forkOptions.getMaxHeapSize();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setMaxHeapSize(String heapSize) {
-        forkOptions.setMaxHeapSize(heapSize);
     }
 
     /**

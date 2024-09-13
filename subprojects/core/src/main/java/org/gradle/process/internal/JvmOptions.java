@@ -374,8 +374,8 @@ public class JvmOptions {
     public void copyTo(JavaForkOptions target) {
         target.setJvmArgs(extraJvmArgs);
         target.setSystemProperties(mutableSystemProperties);
-        target.setMinHeapSize(minHeapSize);
-        target.setMaxHeapSize(maxHeapSize);
+        target.getMinHeapSize().set(minHeapSize);
+        target.getMaxHeapSize().set(maxHeapSize);
         target.bootstrapClasspath(getBootstrapClasspath().getFiles());
         target.setEnableAssertions(assertionsEnabled);
         copyDebugOptionsTo(target.getDebugOptions());

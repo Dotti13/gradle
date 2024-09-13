@@ -416,6 +416,8 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
             getDefaultCharacterEncoding().disallowChanges();
             getMinHeapSize().set(delegate.getMinHeapSize());
             getMinHeapSize().disallowChanges();
+            getMaxHeapSize().set(delegate.getMaxHeapSize());
+            getMaxHeapSize().disallowChanges();
         }
 
         @Override
@@ -510,14 +512,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public String getMaxHeapSize() {
-            return delegate.getMaxHeapSize();
-        }
-
-        @Override
-        public void setMaxHeapSize(String heapSize) {
-            throw new UnsupportedOperationException();
-        }
+        public abstract Property<String> getMaxHeapSize();
 
         @Override
         public List<String> getJvmArgs() {
