@@ -196,7 +196,7 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
             }
         });
         forkOptions = getForkOptionsFactory().newDecoratedJavaForkOptions();
-        forkOptions.setEnableAssertions(true);
+        forkOptions.getEnableAssertions().convention(true);
         forkOptions.setExecutable(null);
         modularity = objectFactory.newInstance(DefaultModularitySpec.class);
         javaLauncher = objectFactory.property(JavaLauncher.class).convention(createJavaLauncherConvention());
@@ -424,17 +424,8 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public boolean getEnableAssertions() {
+    public Property<Boolean> getEnableAssertions() {
         return forkOptions.getEnableAssertions();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setEnableAssertions(boolean enabled) {
-        forkOptions.setEnableAssertions(enabled);
     }
 
     /**

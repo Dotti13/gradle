@@ -377,8 +377,8 @@ public class JvmOptions {
         target.setSystemProperties(mutableSystemProperties);
         target.getMinHeapSize().set(minHeapSize);
         target.getMaxHeapSize().set(maxHeapSize);
-        target.bootstrapClasspath(getBootstrapClasspath().getFiles());
-        target.setEnableAssertions(assertionsEnabled);
+        target.bootstrapClasspath(getBootstrapClasspath());
+        target.getEnableAssertions().set(assertionsEnabled);
         copyDebugOptionsTo(target.getDebugOptions());
         target.systemProperties(immutableSystemProperties);
     }

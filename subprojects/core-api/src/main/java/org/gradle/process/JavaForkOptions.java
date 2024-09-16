@@ -158,20 +158,14 @@ public interface JavaForkOptions extends ProcessForkOptions {
     JavaForkOptions bootstrapClasspath(Object... classpath);
 
     /**
-     * Returns true if assertions are enabled for the process.
-     *
-     * @return true if assertions are enabled, false if disabled
+     * A flag that marks if assertions are enabled for the process.
      */
     @Input
-    @ToBeReplacedByLazyProperty
-    boolean getEnableAssertions();
-
-    /**
-     * Enable or disable assertions for the process.
-     *
-     * @param enabled true to enable assertions, false to disable.
-     */
-    void setEnableAssertions(boolean enabled);
+    @ReplacesEagerProperty(replacedAccessors = {
+        @ReplacedAccessor(value = AccessorType.GETTER, name = "getEnableAssertions", originalType = boolean.class),
+        @ReplacedAccessor(value = AccessorType.SETTER, name = "setEnableAssertions", originalType = boolean.class)
+    })
+    Property<Boolean> getEnableAssertions();
 
     /**
      * Determines whether debugging is enabled for the test process. When enabled — {@code debug = true} — the process

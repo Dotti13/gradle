@@ -171,13 +171,8 @@ interface DelegatingJavaExecSpec extends DelegatingBaseExecSpec, JavaExecSpec {
     }
 
     @Override
-    default boolean getEnableAssertions() {
+    default Property<Boolean> getEnableAssertions() {
         return getDelegate().getEnableAssertions();
-    }
-
-    @Override
-    default void setEnableAssertions(boolean enabled) {
-        getDelegate().setEnableAssertions(enabled);
     }
 
     @Override

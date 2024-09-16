@@ -232,13 +232,8 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     @Override
-    public boolean getEnableAssertions() {
+    public Property<Boolean> getEnableAssertions() {
         return javaOptions.getEnableAssertions();
-    }
-
-    @Override
-    public void setEnableAssertions(boolean enabled) {
-        javaOptions.setEnableAssertions(enabled);
     }
 
     @Override

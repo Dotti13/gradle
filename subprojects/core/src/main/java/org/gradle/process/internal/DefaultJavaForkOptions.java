@@ -137,14 +137,7 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     public abstract Property<String> getDefaultCharacterEncoding();
 
     @Override
-    public boolean getEnableAssertions() {
-        return options.getEnableAssertions();
-    }
-
-    @Override
-    public void setEnableAssertions(boolean enabled) {
-        options.setEnableAssertions(enabled);
-    }
+    public abstract Property<Boolean> getEnableAssertions();
 
     @Override
     public boolean getDebug() {

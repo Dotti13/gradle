@@ -311,17 +311,8 @@ public abstract class JavaExec extends ConventionTask implements JavaExecSpec {
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public boolean getEnableAssertions() {
+    public Property<Boolean> getEnableAssertions() {
         return javaExecSpec.getEnableAssertions();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setEnableAssertions(boolean enabled) {
-        javaExecSpec.setEnableAssertions(enabled);
     }
 
     /**

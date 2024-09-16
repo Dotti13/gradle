@@ -421,6 +421,10 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
             getMaxHeapSize().disallowChanges();
             getJvmArgs().set(delegate.getJvmArgs());
             getJvmArgs().disallowChanges();
+            getBootstrapClasspath().setFrom(delegate.getBootstrapClasspath());
+            getBootstrapClasspath().disallowChanges();
+            getEnableAssertions().set(delegate.getEnableAssertions());
+            getEnableAssertions().disallowChanges();
         }
 
         @Override
@@ -536,9 +540,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public ConfigurableFileCollection getBootstrapClasspath() {
-            return delegate.getBootstrapClasspath();
-        }
+        public abstract ConfigurableFileCollection getBootstrapClasspath();
 
         @Override
         public JavaForkOptions bootstrapClasspath(Object... classpath) {
@@ -546,14 +548,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public boolean getEnableAssertions() {
-            return delegate.getEnableAssertions();
-        }
-
-        @Override
-        public void setEnableAssertions(boolean enabled) {
-            throw new UnsupportedOperationException();
-        }
+        public abstract Property<Boolean> getEnableAssertions();
 
         @Override
         public boolean getDebug() {
