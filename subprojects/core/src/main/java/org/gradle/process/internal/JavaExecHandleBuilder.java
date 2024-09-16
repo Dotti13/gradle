@@ -206,13 +206,8 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     @Override
-    public FileCollection getBootstrapClasspath() {
+    public ConfigurableFileCollection getBootstrapClasspath() {
         return javaOptions.getBootstrapClasspath();
-    }
-
-    @Override
-    public void setBootstrapClasspath(FileCollection classpath) {
-        javaOptions.setBootstrapClasspath(classpath);
     }
 
     @Override

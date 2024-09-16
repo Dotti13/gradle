@@ -19,6 +19,7 @@ package org.gradle.api.tasks;
 import org.apache.tools.ant.types.Commandline;
 import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.jvm.ModularitySpec;
@@ -269,17 +270,8 @@ public abstract class JavaExec extends ConventionTask implements JavaExecSpec {
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public FileCollection getBootstrapClasspath() {
+    public ConfigurableFileCollection getBootstrapClasspath() {
         return javaExecSpec.getBootstrapClasspath();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setBootstrapClasspath(FileCollection classpath) {
-        javaExecSpec.setBootstrapClasspath(classpath);
     }
 
     /**

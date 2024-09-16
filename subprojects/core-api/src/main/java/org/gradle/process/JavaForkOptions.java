@@ -17,7 +17,7 @@
 package org.gradle.process;
 
 import org.gradle.api.Action;
-import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
@@ -105,8 +105,7 @@ public interface JavaForkOptions extends ProcessForkOptions {
     Property<String> getMaxHeapSize();
 
     /**
-     * Returns the extra arguments to use to launch the JVM for the process. Does not include system properties and the
-     * minimum/maximum heap size.
+     * The extra arguments to use to launch the JVM for the process.
      *
      * @return The list of arguments. Returns an empty list if there are no arguments.
      */
@@ -147,16 +146,8 @@ public interface JavaForkOptions extends ProcessForkOptions {
      * @return The bootstrap classpath. Never returns null.
      */
     @Classpath
-    @ToBeReplacedByLazyProperty
-    FileCollection getBootstrapClasspath();
-
-    /**
-     * Sets the bootstrap classpath to use for the process. Set to an empty classpath to use the default bootstrap
-     * classpath for the specified JVM.
-     *
-     * @param classpath The classpath. Must not be null. Can be empty.
-     */
-    void setBootstrapClasspath(FileCollection classpath);
+    @ReplacesEagerProperty
+    ConfigurableFileCollection getBootstrapClasspath();
 
     /**
      * Adds the given values to the end of the bootstrap classpath for the process.

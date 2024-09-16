@@ -349,17 +349,8 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public FileCollection getBootstrapClasspath() {
+    public ConfigurableFileCollection getBootstrapClasspath() {
         return forkOptions.getBootstrapClasspath();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setBootstrapClasspath(FileCollection classpath) {
-        forkOptions.setBootstrapClasspath(classpath);
     }
 
     /**
@@ -399,7 +390,6 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
     public ListProperty<String> getJvmArgs() {
         return forkOptions.getJvmArgs();
     }

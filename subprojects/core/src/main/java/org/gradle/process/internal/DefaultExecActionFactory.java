@@ -20,7 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.gradle.api.Action;
-import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.ExternalProcessStartedListener;
 import org.gradle.api.internal.file.DefaultFileCollectionFactory;
 import org.gradle.api.internal.file.DefaultFileLookup;
@@ -536,13 +536,8 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public FileCollection getBootstrapClasspath() {
+        public ConfigurableFileCollection getBootstrapClasspath() {
             return delegate.getBootstrapClasspath();
-        }
-
-        @Override
-        public void setBootstrapClasspath(FileCollection classpath) {
-            throw new UnsupportedOperationException();
         }
 
         @Override

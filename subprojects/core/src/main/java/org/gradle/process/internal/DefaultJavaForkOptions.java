@@ -17,7 +17,7 @@
 package org.gradle.process.internal;
 
 import org.gradle.api.Action;
-import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.file.FileCollectionFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
@@ -119,18 +119,11 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     }
 
     @Override
-    public FileCollection getBootstrapClasspath() {
-        return options.getBootstrapClasspath();
-    }
-
-    @Override
-    public void setBootstrapClasspath(FileCollection classpath) {
-        options.setBootstrapClasspath(classpath);
-    }
+    public abstract ConfigurableFileCollection getBootstrapClasspath();
 
     @Override
     public JavaForkOptions bootstrapClasspath(Object... classpath) {
-        options.bootstrapClasspath(classpath);
+        getBootstrapClasspath().from(classpath);
         return this;
     }
 

@@ -17,6 +17,7 @@
 package org.gradle.api.internal.provider.sources.process;
 
 import org.gradle.api.Action;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.jvm.ModularitySpec;
 import org.gradle.api.provider.ListProperty;
@@ -159,13 +160,8 @@ interface DelegatingJavaExecSpec extends DelegatingBaseExecSpec, JavaExecSpec {
     }
 
     @Override
-    default FileCollection getBootstrapClasspath() {
+    default ConfigurableFileCollection getBootstrapClasspath() {
         return getDelegate().getBootstrapClasspath();
-    }
-
-    @Override
-    default void setBootstrapClasspath(FileCollection classpath) {
-        getDelegate().setBootstrapClasspath(classpath);
     }
 
     @Override
