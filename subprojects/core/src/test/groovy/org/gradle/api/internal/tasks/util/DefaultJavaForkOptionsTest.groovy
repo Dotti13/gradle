@@ -78,7 +78,7 @@ class DefaultJavaForkOptionsTest extends Specification {
         }
 
         when:
-        options.jvmArgumentProviders << jvmArgumentProvider
+        options.jvmArgumentProviders.add(jvmArgumentProvider)
         then:
         options.allJvmArgs == ['argFromProvider', fileEncodingProperty(), *localeProperties()]
 
@@ -88,7 +88,7 @@ class DefaultJavaForkOptionsTest extends Specification {
         options.allJvmArgs == ['arg1', fileEncodingProperty(), *localeProperties()]
 
         when:
-        options.jvmArgumentProviders << jvmArgumentProvider
+        options.jvmArgumentProviders.add(jvmArgumentProvider)
         then:
         options.allJvmArgs == ['arg1', 'argFromProvider', fileEncodingProperty(), *localeProperties()]
 
@@ -174,18 +174,18 @@ class DefaultJavaForkOptionsTest extends Specification {
 
     def "allJvmArgs include jvmArgumentProviders"() {
         when:
-        options.jvmArgumentProviders << new CommandLineArgumentProvider() {
+        options.jvmArgumentProviders.add(new CommandLineArgumentProvider() {
             @Override
             Iterable<String> asArguments() {
                 return ['argFromProvider1', 'argFromProvider2']
             }
-        }
-        options.jvmArgumentProviders << new CommandLineArgumentProvider() {
+        })
+        options.jvmArgumentProviders.add(new CommandLineArgumentProvider() {
             @Override
             Iterable<String> asArguments() {
                 return ['argFromProvider3']
             }
-        }
+        })
         options.jvmArgs('arg1')
 
         then:
@@ -371,12 +371,12 @@ class DefaultJavaForkOptionsTest extends Specification {
         options.systemProperties(key: 12)
         options.minHeapSize = '64m'
         options.maxHeapSize = '1g'
-        options.jvmArgumentProviders << new CommandLineArgumentProvider() {
+        options.jvmArgumentProviders.add(new CommandLineArgumentProvider() {
             @Override
             Iterable<String> asArguments() {
                 return ['argFromProvider']
             }
-        }
+        })
 
         when:
         options.copyTo(target)
@@ -821,10 +821,10 @@ class DefaultJavaForkOptionsTest extends Specification {
             }
         }
         if (currentHasProviders) {
-            options.jvmArgumentProviders << argumentProvider
+            options.jvmArgumentProviders.add(argumentProvider)
         }
         if (otherHasProviders) {
-            other.jvmArgumentProviders << argumentProvider
+            other.jvmArgumentProviders.add(argumentProvider)
         }
 
         when:

@@ -397,7 +397,7 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     @Override
-    public List<CommandLineArgumentProvider> getJvmArgumentProviders() {
+    public ListProperty<CommandLineArgumentProvider> getJvmArgumentProviders() {
         return javaOptions.getJvmArgumentProviders();
     }
 }

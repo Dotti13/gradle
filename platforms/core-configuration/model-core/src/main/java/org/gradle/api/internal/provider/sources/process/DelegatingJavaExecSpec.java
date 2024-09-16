@@ -154,7 +154,7 @@ interface DelegatingJavaExecSpec extends DelegatingBaseExecSpec, JavaExecSpec {
     }
 
     @Override
-    default List<CommandLineArgumentProvider> getJvmArgumentProviders() {
+    default ListProperty<CommandLineArgumentProvider> getJvmArgumentProviders() {
         return getDelegate().getJvmArgumentProviders();
     }
 

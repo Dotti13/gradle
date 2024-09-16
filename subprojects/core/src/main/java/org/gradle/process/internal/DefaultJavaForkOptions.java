@@ -28,7 +28,6 @@ import org.gradle.process.JavaDebugOptions;
 import org.gradle.process.JavaForkOptions;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -95,12 +94,7 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     }
 
     @Override
-    public List<CommandLineArgumentProvider> getJvmArgumentProviders() {
-        if (jvmArgumentProviders == null) {
-            jvmArgumentProviders = new ArrayList<CommandLineArgumentProvider>();
-        }
-        return jvmArgumentProviders;
-    }
+    public abstract ListProperty<CommandLineArgumentProvider> getJvmArgumentProviders();
 
     @Override
     public Map<String, Object> getSystemProperties() {

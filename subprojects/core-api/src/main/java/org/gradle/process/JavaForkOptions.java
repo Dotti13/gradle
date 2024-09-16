@@ -26,6 +26,8 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.internal.HasInternalProtocol;
+import org.gradle.internal.instrumentation.api.annotations.ReplacedAccessor;
+import org.gradle.internal.instrumentation.api.annotations.ReplacedAccessor.AccessorType;
 import org.gradle.internal.instrumentation.api.annotations.ReplacesEagerProperty;
 import org.gradle.internal.instrumentation.api.annotations.ToBeReplacedByLazyProperty;
 
@@ -135,8 +137,8 @@ public interface JavaForkOptions extends ProcessForkOptions {
      * @since 4.6
      */
     @Nested
-    @ToBeReplacedByLazyProperty
-    List<CommandLineArgumentProvider> getJvmArgumentProviders();
+    @ReplacesEagerProperty(replacedAccessors = @ReplacedAccessor(value = AccessorType.GETTER, name = "getJvmArgumentProviders"))
+    ListProperty<CommandLineArgumentProvider> getJvmArgumentProviders();
 
     /**
      * Returns the bootstrap classpath to use for the process. The default bootstrap classpath for the JVM is used when

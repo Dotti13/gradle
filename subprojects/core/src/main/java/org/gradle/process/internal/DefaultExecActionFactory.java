@@ -531,7 +531,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public List<CommandLineArgumentProvider> getJvmArgumentProviders() {
+        public ListProperty<CommandLineArgumentProvider> getJvmArgumentProviders() {
             throw new UnsupportedOperationException();
         }
 
