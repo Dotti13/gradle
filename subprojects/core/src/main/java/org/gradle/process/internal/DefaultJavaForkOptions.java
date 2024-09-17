@@ -140,14 +140,7 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     public abstract Property<Boolean> getEnableAssertions();
 
     @Override
-    public boolean getDebug() {
-        return options.getDebug();
-    }
-
-    @Override
-    public void setDebug(boolean enabled) {
-        options.setDebug(enabled);
-    }
+    public abstract Property<Boolean> getDebug();
 
     @Override
     public JavaDebugOptions getDebugOptions() {

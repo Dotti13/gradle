@@ -432,20 +432,10 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public boolean getDebug() {
+    @Option(option = "debug-jvm", description = "Enable debugging for the test process. The process is started suspended and listening on port 5005.")
+    public Property<Boolean> getDebug() {
         return forkOptions.getDebug();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Option(option = "debug-jvm", description = "Enable debugging for the test process. The process is started suspended and listening on port 5005.")
-    public void setDebug(boolean enabled) {
-        forkOptions.setDebug(enabled);
-    }
-
 
     /**
      * {@inheritDoc}
@@ -660,7 +650,7 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
             }
         }
 
-        if (getDebug()) {
+        if (getDebug().get()) {
             getLogger().info("Running tests for remote debugging.");
         }
         forkOptions.systemProperty(TestWorker.WORKER_TMPDIR_SYS_PROPERTY, new File(getTemporaryDir(), "work"));
@@ -1111,7 +1101,7 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
     @Internal
     @ToBeReplacedByLazyProperty
     public long getForkEvery() {
-        return getDebug() ? 0 : forkEvery;
+        return getDebug().get() ? 0 : forkEvery;
     }
 
     /**
@@ -1175,7 +1165,7 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
     @Internal
     @ToBeReplacedByLazyProperty
     public int getMaxParallelForks() {
-        return getDebug() ? 1 : maxParallelForks;
+        return getDebug().get() ? 1 : maxParallelForks;
     }
 
     /**

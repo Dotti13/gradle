@@ -176,13 +176,8 @@ interface DelegatingJavaExecSpec extends DelegatingBaseExecSpec, JavaExecSpec {
     }
 
     @Override
-    default boolean getDebug() {
+    default Property<Boolean> getDebug() {
         return getDelegate().getDebug();
-    }
-
-    @Override
-    default void setDebug(boolean enabled) {
-        getDelegate().setDebug(enabled);
     }
 
     @Override

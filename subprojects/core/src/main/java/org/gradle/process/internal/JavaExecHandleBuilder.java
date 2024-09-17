@@ -237,13 +237,8 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     @Override
-    public boolean getDebug() {
+    public Property<Boolean> getDebug() {
         return javaOptions.getDebug();
-    }
-
-    @Override
-    public void setDebug(boolean enabled) {
-        javaOptions.setDebug(enabled);
     }
 
     @Override

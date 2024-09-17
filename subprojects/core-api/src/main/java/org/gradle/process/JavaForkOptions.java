@@ -176,21 +176,14 @@ public interface JavaForkOptions extends ProcessForkOptions {
      * Since Gradle 5.6, you can configure the port and other Java debug properties via
      * {@link #debugOptions(Action)}.
      *
-     * @return true when debugging is enabled, false to disable.
+     * @return A Property[true] when debugging is enabled, false to disable.
      */
     @Input
-    @ToBeReplacedByLazyProperty
-    boolean getDebug();
-
-    /**
-     * Enable or disable debugging for the process. When enabled, the process is started suspended and listening on port
-     * 5005.
-     * <p>
-     * The debug properties (e.g. the port number) can be configured in {@link #debugOptions(Action)}.
-     *
-     * @param enabled true to enable debugging, false to disable.
-     */
-    void setDebug(boolean enabled);
+    @ReplacesEagerProperty(replacedAccessors = {
+        @ReplacedAccessor(value = AccessorType.GETTER, name = "getDebug", originalType = boolean.class),
+        @ReplacedAccessor(value = AccessorType.SETTER, name = "setDebug", originalType = boolean.class)
+    })
+    Property<Boolean> getDebug();
 
     /**
      * Returns the Java Debug Wire Protocol properties for the process. If enabled then the {@code -agentlib:jdwp=...}
@@ -202,7 +195,7 @@ public interface JavaForkOptions extends ProcessForkOptions {
     JavaDebugOptions getDebugOptions();
 
     /**
-     * Configures Java Debug Wire Protocol properties for the process. If {@link #setDebug(boolean)} is enabled then
+     * Configures Java Debug Wire Protocol properties for the process. If {@link #getDebug()} (boolean)} is enabled then
      * the {@code -agentlib:jdwp=...}  will be appended to the JVM arguments with the configuration from the parameter.
      *
      * @param action the Java debug configuration

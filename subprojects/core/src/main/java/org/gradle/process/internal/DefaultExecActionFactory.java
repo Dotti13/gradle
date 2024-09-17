@@ -425,6 +425,8 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
             getBootstrapClasspath().disallowChanges();
             getEnableAssertions().set(delegate.getEnableAssertions());
             getEnableAssertions().disallowChanges();
+            getDebug().set(delegate.getDebug());
+            getDebug().disallowChanges();
         }
 
         @Override
@@ -551,14 +553,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         public abstract Property<Boolean> getEnableAssertions();
 
         @Override
-        public boolean getDebug() {
-            return delegate.getDebug();
-        }
-
-        @Override
-        public void setDebug(boolean enabled) {
-            throw new UnsupportedOperationException();
-        }
+        public abstract Property<Boolean> getDebug();
 
         @Override
         public JavaDebugOptions getDebugOptions() {

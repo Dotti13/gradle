@@ -319,18 +319,9 @@ public abstract class JavaExec extends ConventionTask implements JavaExecSpec {
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public boolean getDebug() {
-        return javaExecSpec.getDebug();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     @Option(option = "debug-jvm", description = "Enable debugging for the process. The process is started suspended and listening on port 5005.")
-    public void setDebug(boolean enabled) {
-        javaExecSpec.setDebug(enabled);
+    public Property<Boolean> getDebug() {
+        return javaExecSpec.getDebug();
     }
 
     /**
