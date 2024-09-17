@@ -34,6 +34,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -371,6 +372,21 @@ public class JvmOptions {
         return debugOptions;
     }
 
+    public void copyFrom(JavaForkOptions source) {
+        setAllJvmArgs(Collections.emptyList());
+        jvmArgs(source.getJvmArgs().get());
+        systemProperties(source.getSystemProperties().get());
+        minHeapSize = source.getMinHeapSize().getOrNull();
+        maxHeapSize = source.getMaxHeapSize().getOrNull();
+        bootstrapClasspath = source.getBootstrapClasspath();
+        assertionsEnabled = source.getEnableAssertions().get();
+        String defaultEncoding = source.getDefaultCharacterEncoding().getOrNull();
+        if (defaultEncoding != null) {
+            setDefaultCharacterEncoding(defaultEncoding);
+        }
+        copyDebugOptionsFrom(source.getDebugOptions());
+    }
+
     public void copyTo(JavaForkOptions target) {
         target.getJvmArgs().empty();
         target.jvmArgs(extraJvmArgs);
@@ -399,12 +415,20 @@ public class JvmOptions {
     }
 
     private void copyDebugOptionsTo(JavaDebugOptions otherOptions) {
+        copyDebugOptions(debugOptions, otherOptions);
+    }
+
+    private void copyDebugOptionsFrom(JavaDebugOptions otherOptions) {
+        copyDebugOptions(otherOptions, debugOptions);
+    }
+
+    private static void copyDebugOptions(JavaDebugOptions from, JavaDebugOptions to) {
         // This severs the connection between from this debugOptions to the other debugOptions
-        otherOptions.getEnabled().set(debugOptions.getEnabled().get());
-        otherOptions.getHost().set(debugOptions.getHost().getOrNull());
-        otherOptions.getPort().set(debugOptions.getPort().get());
-        otherOptions.getServer().set(debugOptions.getServer().get());
-        otherOptions.getSuspend().set(debugOptions.getSuspend().get());
+        to.getEnabled().set(from.getEnabled().get());
+        to.getHost().set(from.getHost().getOrNull());
+        to.getPort().set(from.getPort().get());
+        to.getServer().set(from.getServer().get());
+        to.getSuspend().set(from.getSuspend().get());
     }
 
     public static List<String> fromString(String input) {

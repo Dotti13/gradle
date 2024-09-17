@@ -21,6 +21,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
@@ -30,7 +31,6 @@ import org.gradle.internal.HasInternalProtocol;
 import org.gradle.internal.instrumentation.api.annotations.ReplacedAccessor;
 import org.gradle.internal.instrumentation.api.annotations.ReplacedAccessor.AccessorType;
 import org.gradle.internal.instrumentation.api.annotations.ReplacesEagerProperty;
-import org.gradle.internal.instrumentation.api.annotations.ToBeReplacedByLazyProperty;
 
 import java.util.List;
 import java.util.Map;
@@ -205,25 +205,8 @@ public interface JavaForkOptions extends ProcessForkOptions {
      * @return The immutable list of arguments. Returns an empty list if there are no arguments.
      */
     @Internal
-    @ToBeReplacedByLazyProperty
-    List<String> getAllJvmArgs();
-
-    /**
-     * Sets the full set of arguments to use to launch the JVM for the process. Overwrites any previously set system
-     * properties, minimum/maximum heap size, assertions, and bootstrap classpath.
-     *
-     * @param arguments The arguments. Must not be null.
-     * @since 4.0
-     */
-    void setAllJvmArgs(List<String> arguments);
-
-    /**
-     * Sets the full set of arguments to use to launch the JVM for the process. Overwrites any previously set system
-     * properties, minimum/maximum heap size, assertions, and bootstrap classpath.
-     *
-     * @param arguments The arguments. Must not be null.
-     */
-    void setAllJvmArgs(Iterable<?> arguments);
+    @ReplacesEagerProperty(adapter = AllJvmArgsAdapter.class)
+    Provider<List<String>> getAllJvmArgs();
 
     /**
      * Copies these options to the given options.

@@ -22,6 +22,7 @@ import org.gradle.api.internal.file.FileCollectionFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.internal.file.PathToFileResolver;
 import org.gradle.internal.jvm.Jvm;
 import org.gradle.process.CommandLineArgumentProvider;
@@ -49,32 +50,12 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     }
 
     @Override
-    public List<String> getAllJvmArgs() {
-        if (hasJvmArgumentProviders(this)) {
+    public Provider<List<String>> getAllJvmArgs() {
+        return getJvmArgs().zip(getJvmArgumentProviders(), (args, providers) -> {
             JvmOptions copy = options.createCopy();
-            for (CommandLineArgumentProvider jvmArgumentProvider : jvmArgumentProviders) {
-                copy.jvmArgs(jvmArgumentProvider.asArguments());
-            }
+            copy.copyFrom(this);
             return copy.getAllJvmArgs();
-        } else {
-            return options.getAllJvmArgs();
-        }
-    }
-
-    @Override
-    public void setAllJvmArgs(List<String> arguments) {
-        options.setAllJvmArgs(arguments);
-        if (hasJvmArgumentProviders(this)) {
-            jvmArgumentProviders.clear();
-        }
-    }
-
-    @Override
-    public void setAllJvmArgs(Iterable<?> arguments) {
-        options.setAllJvmArgs(arguments);
-        if (hasJvmArgumentProviders(this)) {
-            jvmArgumentProviders.clear();
-        }
+        });
     }
 
     @Override

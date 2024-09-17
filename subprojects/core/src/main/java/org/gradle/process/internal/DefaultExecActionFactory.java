@@ -17,7 +17,6 @@
 package org.gradle.process.internal;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.gradle.api.Action;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -36,6 +35,7 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternSet;
 import org.gradle.api.tasks.util.internal.PatternSets;
 import org.gradle.initialization.BuildCancellationToken;
@@ -562,18 +562,8 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public List<String> getAllJvmArgs() {
-            return ImmutableList.copyOf(delegate.getAllJvmArgs());
-        }
-
-        @Override
-        public void setAllJvmArgs(List<String> arguments) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void setAllJvmArgs(Iterable<?> arguments) {
-            throw new UnsupportedOperationException();
+        public Provider<List<String>> getAllJvmArgs() {
+            return delegate.getAllJvmArgs();
         }
 
         @Override

@@ -28,6 +28,8 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.initialization.BuildCancellationToken;
 import org.gradle.internal.jvm.DefaultModularitySpec;
 import org.gradle.internal.jvm.JavaModuleDetector;
@@ -66,6 +68,7 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     private final Property<String> mainModule;
     private final Property<String> mainClass;
     private final ListProperty<String> jvmArguments;
+    private final ProviderFactory providers;
     private ConfigurableFileCollection classpath;
     private final JavaForkOptions javaOptions;
     private final ProcessArgumentsSpec applicationArgsSpec = new ProcessArgumentsSpec(this);
@@ -91,16 +94,17 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
         this.jvmArguments = objectFactory.listProperty(String.class);
         this.javaOptions = javaOptions;
         this.modularity = new DefaultModularitySpec(objectFactory);
+        this.providers = objectFactory.newInstance(ProviderFactory.class);
         executable(javaOptions.getExecutable());
     }
 
     @Override
-    public List<String> getAllJvmArgs() {
-        return getAllJvmArgs(this.classpath);
+    public Provider<List<String>> getAllJvmArgs() {
+        return providers.provider(() -> getAllJvmArgs(this.classpath));
     }
 
     private List<String> getAllJvmArgs(FileCollection realClasspath) {
-        List<String> allArgs = new ArrayList<>(javaOptions.getAllJvmArgs());
+        List<String> allArgs = new ArrayList<>(javaOptions.getAllJvmArgs().get());
         boolean runAsModule = modularity.getInferModulePath().get() && mainModule.isPresent();
 
         if (runAsModule) {
@@ -150,16 +154,6 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
         } else {
             allArgs.add(mainModule.get() + "/" + mainClass.get());
         }
-    }
-
-    @Override
-    public void setAllJvmArgs(List<String> arguments) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setAllJvmArgs(Iterable<?> arguments) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
