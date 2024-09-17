@@ -25,6 +25,7 @@ import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.jvm.ModularitySpec;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
@@ -235,17 +236,8 @@ public abstract class JavaExec extends ConventionTask implements JavaExecSpec {
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public Map<String, Object> getSystemProperties() {
+    public MapProperty<String, Object> getSystemProperties() {
         return javaExecSpec.getSystemProperties();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setSystemProperties(Map<String, ?> properties) {
-        javaExecSpec.setSystemProperties(properties);
     }
 
     /**

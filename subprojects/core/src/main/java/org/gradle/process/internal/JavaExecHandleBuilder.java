@@ -26,6 +26,7 @@ import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.initialization.BuildCancellationToken;
 import org.gradle.internal.jvm.DefaultModularitySpec;
@@ -184,13 +185,8 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     @Override
-    public Map<String, Object> getSystemProperties() {
+    public MapProperty<String, Object> getSystemProperties() {
         return javaOptions.getSystemProperties();
-    }
-
-    @Override
-    public void setSystemProperties(Map<String, ?> properties) {
-        javaOptions.setSystemProperties(properties);
     }
 
     @Override

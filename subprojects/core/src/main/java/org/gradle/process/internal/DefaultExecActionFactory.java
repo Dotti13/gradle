@@ -34,6 +34,7 @@ import org.gradle.api.internal.provider.PropertyHost;
 import org.gradle.api.internal.tasks.DefaultTaskDependencyFactory;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.util.PatternSet;
 import org.gradle.api.tasks.util.internal.PatternSets;
@@ -427,6 +428,8 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
             getEnableAssertions().disallowChanges();
             getDebug().set(delegate.getDebug());
             getDebug().disallowChanges();
+            getSystemProperties().set(delegate.getSystemProperties());
+            getSystemProperties().disallowChanges();
         }
 
         @Override
@@ -440,17 +443,10 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public Map<String, Object> getSystemProperties() {
-            return ImmutableMap.copyOf(delegate.getSystemProperties());
-        }
+        public abstract MapProperty<String, Object> getSystemProperties();
 
         @Override
         public void setExecutable(Object executable) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void setSystemProperties(Map<String, ?> properties) {
             throw new UnsupportedOperationException();
         }
 

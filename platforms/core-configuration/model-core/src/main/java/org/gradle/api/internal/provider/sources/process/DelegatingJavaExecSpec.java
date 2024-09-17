@@ -21,6 +21,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.jvm.ModularitySpec;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.process.CommandLineArgumentProvider;
 import org.gradle.process.JavaDebugOptions;
@@ -100,13 +101,8 @@ interface DelegatingJavaExecSpec extends DelegatingBaseExecSpec, JavaExecSpec {
     }
 
     @Override
-    default Map<String, Object> getSystemProperties() {
+    default MapProperty<String, Object> getSystemProperties() {
         return getDelegate().getSystemProperties();
-    }
-
-    @Override
-    default void setSystemProperties(Map<String, ?> properties) {
-        getDelegate().setSystemProperties(properties);
     }
 
     @Override

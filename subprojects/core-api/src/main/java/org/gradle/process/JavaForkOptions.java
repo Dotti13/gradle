@@ -19,6 +19,7 @@ package org.gradle.process;
 import org.gradle.api.Action;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
@@ -39,21 +40,15 @@ import java.util.Map;
  */
 @HasInternalProtocol
 public interface JavaForkOptions extends ProcessForkOptions {
+
     /**
-     * Returns the system properties which will be used for the process.
+     * System properties which will be used for the process.
      *
      * @return The system properties. Returns an empty map when there are no system properties.
      */
     @Input
-    @ToBeReplacedByLazyProperty
-    Map<String, Object> getSystemProperties();
-
-    /**
-     * Sets the system properties to use for the process.
-     *
-     * @param properties The system properties. Must not be null.
-     */
-    void setSystemProperties(Map<String, ?> properties);
+    @ReplacesEagerProperty
+    MapProperty<String, Object> getSystemProperties();
 
     /**
      * Adds some system properties to use for the process.

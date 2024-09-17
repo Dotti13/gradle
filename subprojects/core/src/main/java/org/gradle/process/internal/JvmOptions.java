@@ -374,7 +374,7 @@ public class JvmOptions {
     public void copyTo(JavaForkOptions target) {
         target.getJvmArgs().empty();
         target.jvmArgs(extraJvmArgs);
-        target.setSystemProperties(mutableSystemProperties);
+        target.getSystemProperties().set(mutableSystemProperties);
         target.getMinHeapSize().set(minHeapSize);
         target.getMaxHeapSize().set(maxHeapSize);
         target.bootstrapClasspath(getBootstrapClasspath());

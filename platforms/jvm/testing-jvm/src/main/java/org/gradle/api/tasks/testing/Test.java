@@ -45,6 +45,7 @@ import org.gradle.api.internal.tasks.testing.worker.TestWorker;
 import org.gradle.api.jvm.ModularitySpec;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
@@ -314,17 +315,8 @@ public abstract class Test extends AbstractTestTask implements JavaForkOptions, 
      * {@inheritDoc}
      */
     @Override
-    @ToBeReplacedByLazyProperty
-    public Map<String, Object> getSystemProperties() {
+    public MapProperty<String, Object> getSystemProperties() {
         return forkOptions.getSystemProperties();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setSystemProperties(Map<String, ?> properties) {
-        forkOptions.setSystemProperties(properties);
     }
 
     /**

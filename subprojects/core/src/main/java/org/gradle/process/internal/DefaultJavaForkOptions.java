@@ -20,6 +20,7 @@ import org.gradle.api.Action;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.file.FileCollectionFactory;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.internal.file.PathToFileResolver;
 import org.gradle.internal.jvm.Jvm;
@@ -97,24 +98,17 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     public abstract ListProperty<CommandLineArgumentProvider> getJvmArgumentProviders();
 
     @Override
-    public Map<String, Object> getSystemProperties() {
-        return options.getMutableSystemProperties();
-    }
-
-    @Override
-    public void setSystemProperties(Map<String, ?> properties) {
-        options.setSystemProperties(properties);
-    }
+    public abstract MapProperty<String, Object> getSystemProperties();
 
     @Override
     public JavaForkOptions systemProperties(Map<String, ?> properties) {
-        options.systemProperties(properties);
+        getSystemProperties().putAll(properties);
         return this;
     }
 
     @Override
     public JavaForkOptions systemProperty(String name, Object value) {
-        options.systemProperty(name, value);
+        getSystemProperties().put(name, value);
         return this;
     }
 
@@ -183,7 +177,7 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
             && getHeapSizeMb(getMinHeapSize().getOrNull()) >= getHeapSizeMb(options.getMinHeapSize().getOrNull())
             && getHeapSizeMb(getMaxHeapSize().getOrNull()) >= getHeapSizeMb(options.getMaxHeapSize().getOrNull())
             && normalized(getJvmArgs().getOrNull()).containsAll(normalized(options.getJvmArgs().getOrNull()))
-            && containsAll(getSystemProperties(), options.getSystemProperties())
+            && containsAll(getSystemProperties().get(), options.getSystemProperties().get())
             && containsAll(getEnvironment(), options.getEnvironment())
             && getBootstrapClasspath().getFiles().containsAll(options.getBootstrapClasspath().getFiles());
     }
