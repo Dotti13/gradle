@@ -422,7 +422,7 @@ public class JvmOptions {
         copyDebugOptions(otherOptions, debugOptions);
     }
 
-    private static void copyDebugOptions(JavaDebugOptions from, JavaDebugOptions to) {
+    static void copyDebugOptions(JavaDebugOptions from, JavaDebugOptions to) {
         // This severs the connection between from this debugOptions to the other debugOptions
         to.getEnabled().set(from.getEnabled().get());
         to.getHost().set(from.getHost().getOrNull());

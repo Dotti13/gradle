@@ -40,13 +40,13 @@ import static org.gradle.process.internal.util.MergeOptionsUtil.normalized;
 
 public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions implements JavaForkOptionsInternal {
     private final JvmOptions options;
-    private List<CommandLineArgumentProvider> jvmArgumentProviders;
 
     @Inject
     public DefaultJavaForkOptions(PathToFileResolver resolver, FileCollectionFactory fileCollectionFactory, JavaDebugOptions debugOptions) {
         super(resolver);
         options = new JvmOptions(fileCollectionFactory, debugOptions);
         getDefaultCharacterEncoding().convention(options.getDefaultCharacterEncoding());
+        getEnableAssertions().convention(options.getEnableAssertions());
     }
 
     @Override
@@ -136,12 +136,15 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     @Override
     public JavaForkOptions copyTo(JavaForkOptions target) {
         super.copyTo(target);
-        options.copyTo(target);
-        if (jvmArgumentProviders != null) {
-            for (CommandLineArgumentProvider jvmArgumentProvider : jvmArgumentProviders) {
-                target.jvmArgs(jvmArgumentProvider.asArguments());
-            }
-        }
+        target.getJvmArgs().empty();
+        target.getJvmArgs().set(getJvmArgs());
+        target.getSystemProperties().set(getSystemProperties());
+        target.getMinHeapSize().set(getMaxHeapSize());
+        target.getMaxHeapSize().set(getMaxHeapSize());
+        target.bootstrapClasspath(getBootstrapClasspath());
+        target.getEnableAssertions().set(getEnableAssertions());
+        JvmOptions.copyDebugOptions(this.getDebugOptions(), target.getDebugOptions());
+        target.getJvmArgumentProviders().set(getJvmArgumentProviders());
         return this;
     }
 
@@ -173,18 +176,13 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
         options.setExtraJvmArgs(arguments);
     }
 
-    @Override
-    public JvmOptions toJvmOptions() {
-        return options;
-    }
-
     private static boolean hasJvmArgumentProviders(JavaForkOptions forkOptions) {
         return forkOptions instanceof DefaultJavaForkOptions
             && hasJvmArgumentProviders((DefaultJavaForkOptions) forkOptions);
     }
 
     private static boolean hasJvmArgumentProviders(DefaultJavaForkOptions forkOptions) {
-        return !isNullOrEmpty(forkOptions.jvmArgumentProviders);
+        return !isNullOrEmpty(forkOptions.getJvmArgumentProviders().get());
     }
 
     private static <T> boolean isNullOrEmpty(List<T> list) {

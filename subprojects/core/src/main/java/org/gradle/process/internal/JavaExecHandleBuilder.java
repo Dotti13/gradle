@@ -29,7 +29,6 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.provider.ProviderFactory;
 import org.gradle.initialization.BuildCancellationToken;
 import org.gradle.internal.jvm.DefaultModularitySpec;
 import org.gradle.internal.jvm.JavaModuleDetector;
@@ -68,7 +67,6 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     private final Property<String> mainModule;
     private final Property<String> mainClass;
     private final ListProperty<String> jvmArguments;
-    private final ProviderFactory providers;
     private ConfigurableFileCollection classpath;
     private final JavaForkOptions javaOptions;
     private final ProcessArgumentsSpec applicationArgsSpec = new ProcessArgumentsSpec(this);
@@ -94,26 +92,27 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
         this.jvmArguments = objectFactory.listProperty(String.class);
         this.javaOptions = javaOptions;
         this.modularity = new DefaultModularitySpec(objectFactory);
-        this.providers = objectFactory.newInstance(ProviderFactory.class);
         executable(javaOptions.getExecutable());
     }
 
     @Override
     public Provider<List<String>> getAllJvmArgs() {
-        return providers.provider(() -> getAllJvmArgs(this.classpath));
+        return getAllJvmArgs(this.classpath);
     }
 
-    private List<String> getAllJvmArgs(FileCollection realClasspath) {
-        List<String> allArgs = new ArrayList<>(javaOptions.getAllJvmArgs().get());
-        boolean runAsModule = modularity.getInferModulePath().get() && mainModule.isPresent();
+    private Provider<List<String>> getAllJvmArgs(FileCollection realClasspath) {
+        return javaOptions.getAllJvmArgs().map(allArgs -> {
+            allArgs = new ArrayList<>(allArgs);
+            boolean runAsModule = modularity.getInferModulePath().get() && mainModule.isPresent();
 
-        if (runAsModule) {
-            addModularJavaRunArgs(realClasspath, allArgs);
-        } else {
-            addClassicJavaRunArgs(realClasspath, allArgs);
-        }
+            if (runAsModule) {
+                addModularJavaRunArgs(realClasspath, allArgs);
+            } else {
+                addClassicJavaRunArgs(realClasspath, allArgs);
+            }
 
-        return allArgs;
+            return allArgs;
+        });
     }
 
     private void addClassicJavaRunArgs(FileCollection classpath, List<String> allArgs) {
@@ -317,7 +316,7 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     }
 
     private List<String> getAllArguments(FileCollection realClasspath) {
-        List<String> arguments = new ArrayList<>(getAllJvmArgs(realClasspath));
+        List<String> arguments = new ArrayList<>(getAllJvmArgs(realClasspath).get());
         arguments.addAll(applicationArgsSpec.getAllArguments());
         return arguments;
     }
