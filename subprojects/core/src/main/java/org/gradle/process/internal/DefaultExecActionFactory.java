@@ -60,6 +60,7 @@ import org.gradle.process.JavaForkOptions;
 import org.gradle.process.ProcessForkOptions;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -409,9 +410,10 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
     }
 
-    private static abstract class ImmutableJavaForkOptions implements JavaForkOptionsInternal {
+    static abstract class ImmutableJavaForkOptions implements JavaForkOptionsInternal {
         private final JavaForkOptionsInternal delegate;
 
+        @Inject
         public ImmutableJavaForkOptions(JavaForkOptionsInternal delegate) {
             this.delegate = delegate;
             getDefaultCharacterEncoding().set(delegate.getDefaultCharacterEncoding());
