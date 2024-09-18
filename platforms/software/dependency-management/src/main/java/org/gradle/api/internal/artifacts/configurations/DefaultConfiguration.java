@@ -145,6 +145,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.gradle.api.internal.artifacts.configurations.ConfigurationInternal.InternalState.GRAPH_RESOLVED;
 import static org.gradle.api.internal.artifacts.configurations.ConfigurationInternal.InternalState.UNRESOLVED;
@@ -371,6 +372,7 @@ public abstract class DefaultConfiguration extends AbstractFileCollection implem
     @Override
     public Configuration setExtendsFrom(Iterable<Configuration> extendsFrom) {
         validateMutation(MutationType.HIERARCHY);
+        assertNotDetachedExtensionDoingExtending(extendsFrom);
         for (Configuration configuration : this.extendsFrom) {
             if (inheritedArtifacts != null) {
                 inheritedArtifacts.removeCollection(configuration.getAllArtifacts());
@@ -393,6 +395,7 @@ public abstract class DefaultConfiguration extends AbstractFileCollection implem
     @Override
     public Configuration extendsFrom(Configuration... extendsFrom) {
         validateMutation(MutationType.HIERARCHY);
+        assertNotDetachedExtensionDoingExtending(Arrays.asList(extendsFrom));
         for (Configuration extended : extendsFrom) {
             ConfigurationInternal other = Objects.requireNonNull(Cast.uncheckedCast(extended));
             if (!domainObjectContext.equals(other.getDomainObjectContext())) {
@@ -1853,6 +1856,19 @@ public abstract class DefaultConfiguration extends AbstractFileCollection implem
     @Override
     public ConfigurationRole getRoleAtCreation() {
         return roleAtCreation;
+    }
+
+    private void assertNotDetachedExtensionDoingExtending(Iterable<Configuration> extendsFrom) {
+        if (isDetachedConfiguration()) {
+            String summarizedExtensionTargets = StreamSupport.stream(extendsFrom.spliterator(), false)
+                .map(c -> "'" + c.getName() + "'")
+                .collect(Collectors.joining(", "));
+            DeprecationLogger.deprecateAction(String.format("Calling extendsFrom on %s", this.getDisplayName()))
+                .withContext(String.format("Detached configurations should not extend other configurations, this was extending: %s.", summarizedExtensionTargets))
+                .willBecomeAnErrorInGradle9()
+                .withUpgradeGuideSection(8, "detached_configurations_cannot_extend")
+                .nagUser();
+        }
     }
 
     public class ConfigurationResolvableDependencies implements ResolvableDependenciesInternal {
