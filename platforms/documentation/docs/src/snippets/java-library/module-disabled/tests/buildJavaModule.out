@@ -14,7 +14,6 @@ FAILURE: Build failed with an exception.
 * What went wrong:
 Execution failed for task ':compileJava'.
 > Compilation failed; see the compiler output below.
-
   /home/user/gradle/samples/src/main/java/module-info.java:2: error: module not found: com.google.gson
       requires com.google.gson;          // real module
                          ^
