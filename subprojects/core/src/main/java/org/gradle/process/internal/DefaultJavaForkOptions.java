@@ -47,6 +47,7 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
         options = new JvmOptions(fileCollectionFactory, debugOptions);
         getDefaultCharacterEncoding().convention(options.getDefaultCharacterEncoding());
         getEnableAssertions().convention(options.getEnableAssertions());
+        getDebug().convention(options.getDebug());
     }
 
     @Override
