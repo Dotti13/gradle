@@ -375,6 +375,7 @@ public class JvmOptions {
     public void copyFrom(JavaForkOptions source) {
         setAllJvmArgs(Collections.emptyList());
         jvmArgs(source.getJvmArgs().get());
+        source.getJvmArgumentProviders().get().forEach(provider -> jvmArgs(provider.asArguments()));
         systemProperties(source.getSystemProperties().get());
         minHeapSize = source.getMinHeapSize().getOrNull();
         maxHeapSize = source.getMaxHeapSize().getOrNull();
