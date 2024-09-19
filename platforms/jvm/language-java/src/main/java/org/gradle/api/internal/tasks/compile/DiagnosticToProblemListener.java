@@ -38,8 +38,8 @@ import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Function;
@@ -60,7 +60,7 @@ public class DiagnosticToProblemListener implements DiagnosticListener<JavaFileO
 
     private final InternalProblemReporter problemReporter;
     private final Function<Diagnostic<? extends JavaFileObject>, String> messageFormatter;
-    private final Collection<Problem> problemsReported = new ArrayList<>();
+    private final List<Problem> problemsReported = new ArrayList<>();
 
     private int errorCount = 0;
     private int warningCount = 0;
@@ -283,7 +283,7 @@ public class DiagnosticToProblemListener implements DiagnosticListener<JavaFileO
         }
     }
 
-    public Collection<Problem> getReportedProblems() {
-        return Collections.unmodifiableCollection(problemsReported);
+    public List<Problem> getReportedProblems() {
+        return Collections.unmodifiableList(problemsReported);
     }
 }

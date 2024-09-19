@@ -15,15 +15,16 @@
  */
 package org.gradle.api.internal.tasks.compile;
 
-import org.gradle.api.problems.internal.AdditionalData;
-import org.gradle.api.problems.internal.GeneralData;
 import org.gradle.api.problems.internal.Problem;
 import org.gradle.api.problems.internal.ProblemAwareFailure;
 import org.gradle.internal.exceptions.CompilationFailedIndicator;
+import org.gradle.problems.internal.rendering.ProblemRenderer;
 
 import javax.annotation.Nullable;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 public class CompilationFailedException extends RuntimeException implements CompilationFailedIndicator, ProblemAwareFailure {
@@ -32,7 +33,7 @@ public class CompilationFailedException extends RuntimeException implements Comp
     public static final String COMPILATION_FAILED_DETAILS_BELOW = "Compilation failed; see the compiler output below.";
 
     private final ApiCompilerResult compilerPartialResult;
-    private final Collection<Problem> reportedProblems;
+    private final List<Problem> reportedProblems;
 
     public CompilationFailedException() {
         this((ApiCompilerResult) null);
@@ -56,24 +57,16 @@ public class CompilationFailedException extends RuntimeException implements Comp
         this.reportedProblems = Collections.emptyList();
     }
 
-    public CompilationFailedException(ApiCompilerResult result, Collection<Problem> reportedProblems, String diagnosticCounts) {
+    public CompilationFailedException(ApiCompilerResult result, List<Problem> reportedProblems, String diagnosticCounts) {
         super(exceptionMessage(COMPILATION_FAILED_DETAILS_BELOW + System.lineSeparator(), reportedProblems, diagnosticCounts));
         this.compilerPartialResult = result;
         this.reportedProblems = reportedProblems;
     }
 
-    private static String exceptionMessage(String prefix, Collection<Problem> problems, String diagnosticCounts) {
-        StringBuilder result = new StringBuilder(prefix);
-        String sep = "";
-        for (Problem problem : problems) {
-            AdditionalData additionalData = problem.getAdditionalData();
-            if (additionalData instanceof GeneralData) {
-                result.append(sep);
-                result.append(((GeneralData) additionalData).getAsMap().get("formatted"));
-                sep = System.lineSeparator();
-            }
-        }
-        result.append(System.lineSeparator());
+    private static String exceptionMessage(String prefix, List<Problem> problems, String diagnosticCounts) {
+        StringWriter result = new StringWriter();
+        result.append(prefix);
+        new ProblemRenderer(result).render(problems);
         result.append(diagnosticCounts);
         return result.toString();
     }
