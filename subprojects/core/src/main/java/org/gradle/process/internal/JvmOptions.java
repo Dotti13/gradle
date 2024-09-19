@@ -97,7 +97,7 @@ public class JvmOptions {
     }
 
     public JvmOptions(FileCollectionFactory fileCollectionFactory) {
-        this(fileCollectionFactory, new DefaultJavaDebugOptions());
+        this(fileCollectionFactory, new DefaultJavaDebugOptions(fileCollectionFactory));
     }
 
     /**

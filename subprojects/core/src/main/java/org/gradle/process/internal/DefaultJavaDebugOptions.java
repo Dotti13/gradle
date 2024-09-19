@@ -16,6 +16,7 @@
 
 package org.gradle.process.internal;
 
+import org.gradle.api.internal.file.FileCollectionFactory;
 import org.gradle.api.internal.model.InstantiatorBackedObjectFactory;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
@@ -42,10 +43,10 @@ public class DefaultJavaDebugOptions implements JavaDebugOptions {
         this.suspend = objectFactory.property(Boolean.class).convention(true);
     }
 
-    public DefaultJavaDebugOptions() {
+    public DefaultJavaDebugOptions(FileCollectionFactory fileCollectionFactory) {
         // Ugly, but there are a few places where we need to instantiate a JavaDebugOptions and a regular ObjectFactory service
         // is not available.
-        this(new InstantiatorBackedObjectFactory(DirectInstantiator.INSTANCE));
+        this(new InstantiatorBackedObjectFactory(DirectInstantiator.INSTANCE, fileCollectionFactory));
     }
 
     @Override

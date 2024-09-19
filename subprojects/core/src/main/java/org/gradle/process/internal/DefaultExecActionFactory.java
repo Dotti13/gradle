@@ -105,7 +105,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         DefaultFileCollectionFactory fileCollectionFactory = new DefaultFileCollectionFactory(resolver, DefaultTaskDependencyFactory.withNoAssociatedProject(), new DefaultDirectoryFileTreeFactory(), patternSetFactory, PropertyHost.NO_OP, FileSystems.getDefault());
         GradleUserHomeDirProvider userHomeDirProvider = () -> gradleUserHome;
         TemporaryFileProvider temporaryFileProvider = new GradleUserHomeTemporaryFileProvider(userHomeDirProvider);
-        return of(resolver, fileCollectionFactory, new InstantiatorBackedObjectFactory(DirectInstantiator.INSTANCE), new DefaultExecutorFactory(), new DefaultBuildCancellationToken(), temporaryFileProvider);
+        return of(resolver, fileCollectionFactory, new InstantiatorBackedObjectFactory(DirectInstantiator.INSTANCE, fileCollectionFactory), new DefaultExecutorFactory(), new DefaultBuildCancellationToken(), temporaryFileProvider);
     }
 
     public static DefaultExecActionFactory of(
@@ -114,7 +114,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         ExecutorFactory executorFactory,
         TemporaryFileProvider temporaryFileProvider
     ) {
-        return of(fileResolver, fileCollectionFactory, new InstantiatorBackedObjectFactory(DirectInstantiator.INSTANCE), executorFactory, new DefaultBuildCancellationToken(), temporaryFileProvider);
+        return of(fileResolver, fileCollectionFactory, new InstantiatorBackedObjectFactory(DirectInstantiator.INSTANCE, fileCollectionFactory), executorFactory, new DefaultBuildCancellationToken(), temporaryFileProvider);
     }
 
     private static DefaultExecActionFactory of(
@@ -154,7 +154,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
 
     @Override
     public JavaForkOptionsInternal newJavaForkOptions() {
-        final DefaultJavaForkOptions forkOptions = objectFactory.newInstance(DefaultJavaForkOptions.class, objectFactory, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
+        final DefaultJavaForkOptions forkOptions = objectFactory.newInstance(DefaultJavaForkOptions.class, objectFactory, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions(objectFactory));
         if (forkOptions.getExecutable() == null) {
             forkOptions.setExecutable(Jvm.current().getJavaExecutable());
         }
@@ -168,7 +168,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         // NOTE: We do not want/need a decorated version of JavaForkOptions or JavaDebugOptions because
         // these immutable instances are held across builds and will retain classloaders/services in the decorated object
         DefaultFileCollectionFactory fileCollectionFactory = new DefaultFileCollectionFactory(fileResolver, DefaultTaskDependencyFactory.withNoAssociatedProject(), new DefaultDirectoryFileTreeFactory(), nonCachingPatternSetFactory, PropertyHost.NO_OP, FileSystems.getDefault());
-        JavaForkOptionsInternal copy = objectFactory.newInstance(DefaultJavaForkOptions.class, objectFactory, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
+        JavaForkOptionsInternal copy = objectFactory.newInstance(DefaultJavaForkOptions.class, objectFactory, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions(objectFactory));
         options.copyTo(copy);
         return objectFactory.newInstance(ImmutableJavaForkOptions.class, copy);
     }

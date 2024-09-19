@@ -92,7 +92,7 @@ public abstract class DefaultScript extends BasicScript {
                     .withFileResolver(resolver)
                     .withFileCollectionFactory(fileCollectionFactoryWithBase)
                     .withInstantiator(instantiator)
-                    .withObjectFactory(new InstantiatorBackedObjectFactory(instantiator))
+                    .withObjectFactory(new InstantiatorBackedObjectFactory(instantiator, fileCollectionFactoryWithBase))
                     .build();
             } else {
                 fileOperations = DefaultFileOperations.createSimple(fileLookup.getFileResolver(), fileCollectionFactory, services);
