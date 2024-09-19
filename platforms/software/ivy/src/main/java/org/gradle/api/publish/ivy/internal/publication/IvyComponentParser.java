@@ -163,11 +163,12 @@ public class IvyComponentParser {
                 IvyArtifact ivyArtifact = seenArtifacts.get(key);
                 if (ivyArtifact == null) {
                     ivyArtifact = ivyArtifactParser.parseNotation(publishArtifact);
-                    ivyArtifact.setConf(conf);
+                    ivyArtifact.getConf().set(conf);
                     seenArtifacts.put(key, ivyArtifact);
                     artifacts.add(ivyArtifact);
                 } else {
-                    ivyArtifact.setConf(ivyArtifact.getConf() + "," + conf);
+                    String oldValue = ivyArtifact.getConf().get();
+                    ivyArtifact.getConf().set(oldValue + "," + conf);
                 }
             }
         }
