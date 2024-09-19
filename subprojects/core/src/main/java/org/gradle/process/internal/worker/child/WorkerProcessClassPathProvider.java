@@ -95,6 +95,7 @@ public class WorkerProcessClassPathProvider implements ClassPathProvider {
         "gradle-worker-main",
         "gradle-build-process-services",
         "gradle-problems-api",
+        "gradle-problems-rendering",
         "gradle-process-memory-services",
         "gradle-process-services",
         "gradle-persistent-cache",
