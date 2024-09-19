@@ -19,6 +19,7 @@ package org.gradle.process.internal;
 import org.gradle.api.Action;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.file.FileCollectionFactory;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
@@ -38,16 +39,31 @@ import static org.gradle.process.internal.util.MergeOptionsUtil.containsAll;
 import static org.gradle.process.internal.util.MergeOptionsUtil.getHeapSizeMb;
 import static org.gradle.process.internal.util.MergeOptionsUtil.normalized;
 
-public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions implements JavaForkOptionsInternal {
+public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements JavaForkOptionsInternal {
     private final JvmOptions options;
+    private final ListProperty<String> jvmArgs;
+    private final ListProperty<CommandLineArgumentProvider> jvmArgumentProviders;
+    private final MapProperty<String, Object> systemProperties;
+    private final ConfigurableFileCollection bootstrapClasspath;
+    private final Property<String> minHeapSize;
+    private final Property<String> maxHeapSize;
+    private final Property<String> defaultCharacterEncoding;
+    private final Property<Boolean> enableAssertions;
+    private final Property<Boolean> debug;
 
     @Inject
-    public DefaultJavaForkOptions(PathToFileResolver resolver, FileCollectionFactory fileCollectionFactory, JavaDebugOptions debugOptions) {
+    public DefaultJavaForkOptions(ObjectFactory objectFactory, PathToFileResolver resolver, FileCollectionFactory fileCollectionFactory, JavaDebugOptions debugOptions) {
         super(resolver);
         options = new JvmOptions(fileCollectionFactory, debugOptions);
-        getDefaultCharacterEncoding().convention(options.getDefaultCharacterEncoding());
-        getEnableAssertions().convention(options.getEnableAssertions());
-        getDebug().convention(options.getDebug());
+        this.jvmArgs = objectFactory.listProperty(String.class);
+        this.jvmArgumentProviders = objectFactory.listProperty(CommandLineArgumentProvider.class);
+        this.systemProperties = objectFactory.mapProperty(String.class, Object.class);
+        this.bootstrapClasspath = objectFactory.fileCollection();
+        this.minHeapSize = objectFactory.property(String.class);
+        this.maxHeapSize = objectFactory.property(String.class);
+        this.defaultCharacterEncoding = objectFactory.property(String.class).convention(options.getDefaultCharacterEncoding());
+        this.enableAssertions = objectFactory.property(Boolean.class).convention(options.getEnableAssertions());
+        this.debug = objectFactory.property(Boolean.class).convention(options.getDebug());
     }
 
     @Override
@@ -60,7 +76,9 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     }
 
     @Override
-    public abstract ListProperty<String> getJvmArgs();
+    public ListProperty<String> getJvmArgs() {
+        return jvmArgs;
+    }
 
     @Override
     public JavaForkOptions jvmArgs(Iterable<?> arguments) {
@@ -77,10 +95,14 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     }
 
     @Override
-    public abstract ListProperty<CommandLineArgumentProvider> getJvmArgumentProviders();
+    public ListProperty<CommandLineArgumentProvider> getJvmArgumentProviders() {
+        return jvmArgumentProviders;
+    }
 
     @Override
-    public abstract MapProperty<String, Object> getSystemProperties();
+    public MapProperty<String, Object> getSystemProperties() {
+        return systemProperties;
+    }
 
     @Override
     public JavaForkOptions systemProperties(Map<String, ?> properties) {
@@ -95,7 +117,9 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     }
 
     @Override
-    public abstract ConfigurableFileCollection getBootstrapClasspath();
+    public ConfigurableFileCollection getBootstrapClasspath() {
+        return bootstrapClasspath;
+    }
 
     @Override
     public JavaForkOptions bootstrapClasspath(Object... classpath) {
@@ -104,19 +128,29 @@ public abstract class DefaultJavaForkOptions extends DefaultProcessForkOptions i
     }
 
     @Override
-    public abstract Property<String> getMinHeapSize();
+    public Property<String> getMinHeapSize() {
+        return minHeapSize;
+    }
 
     @Override
-    public abstract Property<String> getMaxHeapSize();
+    public Property<String> getMaxHeapSize() {
+        return maxHeapSize;
+    }
 
     @Override
-    public abstract Property<String> getDefaultCharacterEncoding();
+    public Property<String> getDefaultCharacterEncoding() {
+        return defaultCharacterEncoding;
+    }
 
     @Override
-    public abstract Property<Boolean> getEnableAssertions();
+    public Property<Boolean> getEnableAssertions() {
+        return enableAssertions;
+    }
 
     @Override
-    public abstract Property<Boolean> getDebug();
+    public Property<Boolean> getDebug() {
+        return debug;
+    }
 
     @Override
     public JavaDebugOptions getDebugOptions() {

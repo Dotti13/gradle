@@ -37,7 +37,7 @@ import java.util.List;
 import static org.gradle.process.internal.DefaultExecSpec.copyBaseExecSpecTo;
 
 
-public abstract class DefaultJavaExecSpec extends DefaultJavaForkOptions implements JavaExecSpec, ProcessArgumentsSpec.HasExecutable {
+public class DefaultJavaExecSpec extends DefaultJavaForkOptions implements JavaExecSpec, ProcessArgumentsSpec.HasExecutable {
 
     private boolean ignoreExitValue;
     private final ProcessStreamsSpec streamsSpec = new ProcessStreamsSpec();
@@ -57,7 +57,7 @@ public abstract class DefaultJavaExecSpec extends DefaultJavaForkOptions impleme
         PathToFileResolver resolver,
         FileCollectionFactory fileCollectionFactory
     ) {
-        super(resolver, fileCollectionFactory, objectFactory.newInstance(DefaultJavaDebugOptions.class));
+        super(objectFactory, resolver, fileCollectionFactory, objectFactory.newInstance(DefaultJavaDebugOptions.class));
         this.jvmArguments = objectFactory.listProperty(String.class);
         this.mainClass = objectFactory.property(String.class);
         this.mainModule = objectFactory.property(String.class);

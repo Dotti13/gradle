@@ -154,7 +154,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
 
     @Override
     public JavaForkOptionsInternal newJavaForkOptions() {
-        final DefaultJavaForkOptions forkOptions = objectFactory.newInstance(DefaultJavaForkOptions.class, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
+        final DefaultJavaForkOptions forkOptions = objectFactory.newInstance(DefaultJavaForkOptions.class, objectFactory, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
         if (forkOptions.getExecutable() == null) {
             forkOptions.setExecutable(Jvm.current().getJavaExecutable());
         }
@@ -168,7 +168,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         // NOTE: We do not want/need a decorated version of JavaForkOptions or JavaDebugOptions because
         // these immutable instances are held across builds and will retain classloaders/services in the decorated object
         DefaultFileCollectionFactory fileCollectionFactory = new DefaultFileCollectionFactory(fileResolver, DefaultTaskDependencyFactory.withNoAssociatedProject(), new DefaultDirectoryFileTreeFactory(), nonCachingPatternSetFactory, PropertyHost.NO_OP, FileSystems.getDefault());
-        JavaForkOptionsInternal copy = objectFactory.newInstance(DefaultJavaForkOptions.class, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
+        JavaForkOptionsInternal copy = objectFactory.newInstance(DefaultJavaForkOptions.class, objectFactory, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions());
         options.copyTo(copy);
         return objectFactory.newInstance(ImmutableJavaForkOptions.class, copy);
     }
@@ -373,7 +373,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         @Override
         public JavaForkOptionsInternal newDecoratedJavaForkOptions() {
             JavaDebugOptions javaDebugOptions = objectFactory.newInstance(DefaultJavaDebugOptions.class, objectFactory);
-            final DefaultJavaForkOptions forkOptions = instantiator.newInstance(DefaultJavaForkOptions.class, fileResolver, fileCollectionFactory, javaDebugOptions);
+            final DefaultJavaForkOptions forkOptions = instantiator.newInstance(DefaultJavaForkOptions.class, objectFactory, fileResolver, fileCollectionFactory, javaDebugOptions);
             forkOptions.setExecutable(Jvm.current().getJavaExecutable());
             return forkOptions;
         }
