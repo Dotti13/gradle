@@ -17,6 +17,39 @@
             ]
         },
         {
+            "type": "org.gradle.api.publish.maven.tasks.GenerateMavenPom",
+            "member": "Method org.gradle.api.publish.maven.tasks.GenerateMavenPom.getFileResolver()",
+            "acceptation": "Idiomatic injection. Should be removed, but deperecated method depends on it",
+            "changes": [
+                "Method is now abstract",
+                "Deprecated annotation was added"
+            ]
+        },
+        {
+            "type": "org.gradle.api.publish.maven.tasks.GenerateMavenPom",
+            "member": "Method org.gradle.api.publish.maven.tasks.GenerateMavenPom.getVersionRangeMapper()",
+            "acceptation": "Deprecated according to the plan",
+            "changes": [
+                "Method has been removed"
+            ]
+        },
+        {
+            "type": "org.gradle.api.publish.maven.tasks.GenerateMavenPom",
+            "member": "Method org.gradle.api.publish.maven.tasks.GenerateMavenPom.withCompileScopeAttributes(org.gradle.api.internal.attributes.ImmutableAttributes)",
+            "acceptation": "Deprecated according to the plan",
+            "changes": [
+                "Method has been removed"
+            ]
+        },
+        {
+            "type": "org.gradle.api.publish.maven.tasks.GenerateMavenPom",
+            "member": "Method org.gradle.api.publish.maven.tasks.GenerateMavenPom.withRuntimeScopeAttributes(org.gradle.api.internal.attributes.ImmutableAttributes)",
+            "acceptation": "Deprecated according to the plan",
+            "changes": [
+                "Method has been removed"
+            ]
+        },
+        {
             "type": "org.gradle.api.publish.maven.tasks.PublishToMavenRepository",
             "member": "Method org.gradle.api.publish.maven.tasks.PublishToMavenRepository.getListenerManager()",
             "acceptation": "The method is unused",
