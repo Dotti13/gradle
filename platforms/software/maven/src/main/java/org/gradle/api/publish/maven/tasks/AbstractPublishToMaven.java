@@ -19,13 +19,15 @@ package org.gradle.api.publish.maven.tasks;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal;
 import org.gradle.api.publish.maven.internal.publisher.MavenDuplicatePublicationTracker;
 import org.gradle.api.publish.maven.internal.publisher.MavenPublishers;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.PathSensitivity;
-import org.gradle.internal.instrumentation.api.annotations.ToBeReplacedByLazyProperty;
+import org.gradle.internal.instrumentation.api.annotations.ReplacesEagerProperty;
 import org.gradle.internal.serialization.Transient;
 import org.gradle.work.DisableCachingByDefault;
 
@@ -42,7 +44,7 @@ import static org.gradle.internal.serialization.Transient.varOf;
 @DisableCachingByDefault(because = "Abstract super-class, not to be instantiated directly")
 public abstract class AbstractPublishToMaven extends DefaultTask {
 
-    private final Transient.Var<MavenPublicationInternal> publication = varOf();
+    private final Transient.Var<Property<MavenPublication>> publication = varOf(getObjectFactory().property(MavenPublication.class));
 
     public AbstractPublishToMaven() {
         // Allow the publication to participate in incremental build
@@ -62,27 +64,16 @@ public abstract class AbstractPublishToMaven extends DefaultTask {
 
     /**
      * The publication to be published.
-     *
-     * @return The publication to be published
      */
     @Internal
-    @ToBeReplacedByLazyProperty
-    public MavenPublication getPublication() {
+    @ReplacesEagerProperty
+    public Property<MavenPublication> getPublication() {
         return publication.get();
-    }
-
-    /**
-     * Sets the publication to be published.
-     *
-     * @param publication The publication to be published
-     */
-    public void setPublication(MavenPublication publication) {
-        this.publication.set(toPublicationInternal(publication));
     }
 
     @Internal
     protected MavenPublicationInternal getPublicationInternal() {
-        return toPublicationInternal(getPublication());
+        return toPublicationInternal(getPublication().get());
     }
 
     private static MavenPublicationInternal toPublicationInternal(MavenPublication publication) {
@@ -102,12 +93,10 @@ public abstract class AbstractPublishToMaven extends DefaultTask {
     }
 
     @Inject
-    protected MavenPublishers getMavenPublishers() {
-        throw new UnsupportedOperationException();
-    }
+    protected abstract MavenPublishers getMavenPublishers();
+    @Inject
+    protected abstract MavenDuplicatePublicationTracker getDuplicatePublicationTracker();
 
     @Inject
-    protected MavenDuplicatePublicationTracker getDuplicatePublicationTracker() {
-        throw new UnsupportedOperationException();
-    }
+    protected abstract ObjectFactory getObjectFactory();
 }
