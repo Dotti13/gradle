@@ -52,6 +52,7 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
     private final Property<Boolean> enableAssertions;
     private final Property<Boolean> debug;
     private final Provider<Object> emptyProvider;
+    private Iterable<?> extraJvmArgs;
 
     @Inject
     public DefaultJavaForkOptions(ObjectFactory objectFactory, PathToFileResolver resolver, FileCollectionFactory fileCollectionFactory, JavaDebugOptions debugOptions) {
@@ -224,7 +225,12 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
 
     @Override
     public void setExtraJvmArgs(Iterable<?> arguments) {
-        options.setExtraJvmArgs(arguments);
+        this.extraJvmArgs = arguments;
+    }
+
+    @Override
+    public Iterable<?> getExtraJvmArgs() {
+        return extraJvmArgs;
     }
 
     private static boolean hasJvmArgumentProviders(JavaForkOptions forkOptions) {

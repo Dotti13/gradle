@@ -59,7 +59,7 @@ import static org.gradle.process.internal.util.LongCommandLineDetectionUtil.hasC
 /**
  * Use {@link JavaExecHandleFactory} instead.
  */
-public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements JavaExecSpec, ProcessArgumentsSpec.HasExecutable {
+public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements JavaExecSpec, ProcessArgumentsSpec.HasExecutable, JavaForkOptionsInternal {
     private static final Logger LOGGER = Logging.getLogger(JavaExecHandleBuilder.class);
     private final FileCollectionFactory fileCollectionFactory;
     private final TemporaryFileProvider temporaryFileProvider;
@@ -68,7 +68,7 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     private final Property<String> mainClass;
     private final ListProperty<String> jvmArguments;
     private ConfigurableFileCollection classpath;
-    private final JavaForkOptions javaOptions;
+    private final JavaForkOptionsInternal javaOptions;
     private final ProcessArgumentsSpec applicationArgsSpec = new ProcessArgumentsSpec(this);
     private final ModularitySpec modularity;
 
@@ -80,7 +80,7 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
         BuildCancellationToken buildCancellationToken,
         TemporaryFileProvider temporaryFileProvider,
         @Nullable JavaModuleDetector javaModuleDetector,
-        JavaForkOptions javaOptions
+        JavaForkOptionsInternal javaOptions
     ) {
         super(fileResolver, executor, buildCancellationToken);
         this.fileCollectionFactory = fileCollectionFactory;
@@ -373,5 +373,25 @@ public class JavaExecHandleBuilder extends AbstractExecHandleBuilder implements 
     @Override
     public ListProperty<CommandLineArgumentProvider> getJvmArgumentProviders() {
         return javaOptions.getJvmArgumentProviders();
+    }
+
+    @Override
+    public boolean isCompatibleWith(JavaForkOptions options) {
+        return javaOptions.isCompatibleWith(options);
+    }
+
+    @Override
+    public void setExtraJvmArgs(Iterable<?> jvmArgs) {
+        javaOptions.setExtraJvmArgs(jvmArgs);
+    }
+
+    @Override
+    public Iterable<?> getExtraJvmArgs() {
+        return javaOptions.getExtraJvmArgs();
+    }
+
+    @Override
+    public void checkDebugConfiguration(Iterable<?> arguments) {
+        javaOptions.checkDebugConfiguration(arguments);
     }
 }
