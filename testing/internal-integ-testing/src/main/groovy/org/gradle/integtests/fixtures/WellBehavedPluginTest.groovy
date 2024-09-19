@@ -61,7 +61,7 @@ abstract class WellBehavedPluginTest extends AbstractIntegrationSpec {
         applyPlugin()
 
         when:
-        executer.withArguments("--disable-problem-report")
+        executer.withArguments("--no-problems-report")
         run "tasks"
 
         then:

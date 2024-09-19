@@ -55,7 +55,7 @@ abstract class AbstractBasicGroupedTaskLoggingFunctionalTest extends AbstractCon
 
         when:
         server.expectConcurrent("log1", "log2", "log3")
-        executer.withArgument("--parallel")
+        executer.withArguments("--parallel", "--no-problems-report")
         // run build in another process to avoid interference from logging from test fixtures
         result = executer.withTasks("log").start().waitForFinish()
 
@@ -63,13 +63,13 @@ abstract class AbstractBasicGroupedTaskLoggingFunctionalTest extends AbstractCon
         result.groupedOutput.taskCount == 3
         if (errorsShouldAppearOnStdout()) {
             // both stdout and stderr are attached to the console
-            assert result.groupedOutput.task(':1:log').output.startsWith("Error from 1\nOutput from 1\nDone with 1\nDone with 1")
-            assert result.groupedOutput.task(':2:log').output.startsWith("Error from 2\nOutput from 2\nDone with 2\nDone with 2")
-            assert result.groupedOutput.task(':3:log').output.startsWith("Error from 3\nOutput from 3\nDone with 3\nDone with 3")
+            assert result.groupedOutput.task(':1:log').output == "Error from 1\nOutput from 1\nDone with 1\nDone with 1"
+            assert result.groupedOutput.task(':2:log').output == "Error from 2\nOutput from 2\nDone with 2\nDone with 2"
+            assert result.groupedOutput.task(':3:log').output == "Error from 3\nOutput from 3\nDone with 3\nDone with 3"
         } else {
-            assert result.groupedOutput.task(':1:log').output.startsWith("Output from 1\nDone with 1")
-            assert result.groupedOutput.task(':2:log').output.startsWith("Output from 2\nDone with 2")
-            assert result.groupedOutput.task(':3:log').output.startsWith("Output from 3\nDone with 3")
+            assert result.groupedOutput.task(':1:log').output == "Output from 1\nDone with 1"
+            assert result.groupedOutput.task(':2:log').output == "Output from 2\nDone with 2"
+            assert result.groupedOutput.task(':3:log').output == "Output from 3\nDone with 3"
 
             ['Error from 1', 'Done with 1', 'Error from 2', 'Done with 2', 'Error from 3', 'Done with 3'].each(result.&assertHasErrorOutput)
         }
@@ -88,10 +88,11 @@ abstract class AbstractBasicGroupedTaskLoggingFunctionalTest extends AbstractCon
         """
 
         when:
+        executer.withArgument("--no-problems-report")
         succeeds('log')
 
         then:
-        result.groupedOutput.task(':log').output.startsWith("First line of text\nSecond line of text")
+        result.groupedOutput.task(':log').output == "First line of text\nSecond line of text"
     }
 
     def "system out and err gets grouped"() {
@@ -181,7 +182,10 @@ abstract class AbstractBasicGroupedTaskLoggingFunctionalTest extends AbstractCon
         when:
         def waiting = server.expectConcurrentAndBlock("a-waiting", "b-waiting")
         def done = server.expectAndBlock("b-done")
-        def build = executer.withArguments("--parallel").withTasks("run").start()
+        def build = executer
+            .withArguments("--parallel", "--no-problems-report")
+            .withTasks("run")
+            .start()
 
         waiting.waitForAllPendingCalls()
         waiting.release("b-waiting")
@@ -191,7 +195,7 @@ abstract class AbstractBasicGroupedTaskLoggingFunctionalTest extends AbstractCon
         result = build.waitForFailure()
 
         then:
-        result.groupedOutput.task(':a:log').output.startsWith('Before\nAfter')
+        result.groupedOutput.task(':a:log').output == 'Before\nAfter'
         result.groupedOutput.task(':a:log').outcome == 'FAILED'
         result.groupedOutput.task(':b:log').output == 'Interrupting output'
         result.groupedOutput.task(':b:log').outcome == null
@@ -212,7 +216,9 @@ abstract class AbstractBasicGroupedTaskLoggingFunctionalTest extends AbstractCon
         """
 
         def handle = server.expectAndBlock(server.get('running'))
-        def gradle = executer.withTasks('log').start()
+        def gradle = executer
+            .withArgument("--no-problems-report")
+            .withTasks('log').start()
 
         when:
         handle.waitForAllPendingCalls()
@@ -221,7 +227,7 @@ abstract class AbstractBasicGroupedTaskLoggingFunctionalTest extends AbstractCon
         result = gradle.waitForFinish()
 
         then:
-        result.groupedOutput.task(':log').output.startsWith('Before\nAfter')
+        result.groupedOutput.task(':log').output == 'Before\nAfter'
 
         cleanup:
         gradle?.waitForFinish()
