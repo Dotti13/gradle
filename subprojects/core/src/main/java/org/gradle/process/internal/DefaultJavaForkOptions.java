@@ -19,6 +19,7 @@ package org.gradle.process.internal;
 import org.gradle.api.Action;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.file.FileCollectionFactory;
+import org.gradle.api.internal.provider.MapPropertyInternal;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
@@ -50,6 +51,7 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
     private final Property<String> defaultCharacterEncoding;
     private final Property<Boolean> enableAssertions;
     private final Property<Boolean> debug;
+    private final Provider<Object> emptyProvider;
 
     @Inject
     public DefaultJavaForkOptions(ObjectFactory objectFactory, PathToFileResolver resolver, FileCollectionFactory fileCollectionFactory, JavaDebugOptions debugOptions) {
@@ -64,6 +66,9 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
         this.defaultCharacterEncoding = objectFactory.property(String.class).convention(options.getDefaultCharacterEncoding());
         this.enableAssertions = objectFactory.property(Boolean.class).convention(options.getEnableAssertions());
         this.debug = objectFactory.property(Boolean.class).convention(options.getDebug());
+        Property<Object> emptyProvider = objectFactory.property(Object.class);
+        emptyProvider.finalizeValue();
+        this.emptyProvider = emptyProvider;
     }
 
     @Override
@@ -83,7 +88,11 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
     @Override
     public JavaForkOptions jvmArgs(Iterable<?> arguments) {
         for (Object argument : arguments) {
-            getJvmArgs().add(argument.toString());
+            if (argument instanceof Provider) {
+                getJvmArgs().add(((Provider<?>) argument).map(Object::toString));
+            } else {
+                getJvmArgs().add(argument.toString());
+            }
         }
         return this;
     }
@@ -106,13 +115,20 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
 
     @Override
     public JavaForkOptions systemProperties(Map<String, ?> properties) {
-        getSystemProperties().putAll(properties);
+        properties.forEach(this::systemProperty);
         return this;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public JavaForkOptions systemProperty(String name, Object value) {
-        getSystemProperties().put(name, value);
+        if (value instanceof Provider) {
+            ((MapPropertyInternal<String, Object>) getSystemProperties()).insert(name, (Provider<?>) value);
+        } else if (value == null) {
+            ((MapPropertyInternal<String, Object>) getSystemProperties()).insert(name, emptyProvider);
+        } else {
+            ((MapPropertyInternal<String, Object>) getSystemProperties()).insert(name, value);
+        }
         return this;
     }
 
