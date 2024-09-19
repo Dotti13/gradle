@@ -220,7 +220,7 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
 
     @Override
     public void checkDebugConfiguration(Iterable<?> arguments) {
-        options.checkDebugConfiguration(arguments);
+        JvmOptions.checkDebugConfiguration(getDebugOptions(), arguments);
     }
 
     @Override
