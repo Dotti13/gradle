@@ -217,6 +217,15 @@ The existing method does not behave as specified by its javadoc, and we do not p
 
 Potential migrations include using `Object.equals(Object)` directly, or comparing the fields of dependencies manually.
 
+[[deprecated_use_logger]]
+==== Deprecated customized Gradle logging
+
+The link:{javadocPath}/org/gradle/api/invocation/Gradle.html#useLogger(java.lang.Object)[Gradle#useLogger(Object)] method has been deprecated and will be removed in Gradle 9.0.
+
+This method was originally intended to customize logs printed by Gradle.
+However, it only allows intercepting a subset of the logs and cannot work with the <<configuration_cache#config_cache:requirements:build_listeners,configuration cache>>.
+We do not plan to introduce a replacement for this feature.
+
 [[changes_8.10]]
 == Upgrading from 8.9 and earlier
 
