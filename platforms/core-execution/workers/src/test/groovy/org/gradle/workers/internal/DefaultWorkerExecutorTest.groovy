@@ -99,12 +99,12 @@ class DefaultWorkerExecutorTest extends Specification {
         def daemonForkOptions = workerExecutor.getWorkerRequirement(runnable.class, configuration, null).forkOptions
 
         then:
-        daemonForkOptions.javaForkOptions.minHeapSize == "128m"
-        daemonForkOptions.javaForkOptions.maxHeapSize == "128m"
-        daemonForkOptions.javaForkOptions.allJvmArgs.contains("-Dfoo=bar")
-        daemonForkOptions.javaForkOptions.allJvmArgs.contains("-foo")
-        daemonForkOptions.javaForkOptions.allJvmArgs.contains("-Xbootclasspath:${temporaryFolder.file('foo')}".toString())
-        daemonForkOptions.javaForkOptions.allJvmArgs.contains("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
+        daemonForkOptions.javaForkOptions.minHeapSize.get() == "128m"
+        daemonForkOptions.javaForkOptions.maxHeapSize.get() == "128m"
+        daemonForkOptions.javaForkOptions.allJvmArgs.get().contains("-Dfoo=bar")
+        daemonForkOptions.javaForkOptions.allJvmArgs.get().contains("-foo")
+        daemonForkOptions.javaForkOptions.allJvmArgs.get().contains("-Xbootclasspath:${temporaryFolder.file('foo')}".toString())
+        daemonForkOptions.javaForkOptions.allJvmArgs.get().contains("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
     }
 
     def "can add to classpath on executor"() {
