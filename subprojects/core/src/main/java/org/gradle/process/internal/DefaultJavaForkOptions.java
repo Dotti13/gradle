@@ -35,13 +35,15 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.gradle.process.internal.util.MergeOptionsUtil.containsAll;
 import static org.gradle.process.internal.util.MergeOptionsUtil.getHeapSizeMb;
 import static org.gradle.process.internal.util.MergeOptionsUtil.normalized;
 
 public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements JavaForkOptionsInternal {
-    private final JvmOptions options;
+    private final FileCollectionFactory fileCollectionFactory;
+    private final ObjectFactory objectFactory;
     private final ListProperty<String> jvmArgs;
     private final ListProperty<CommandLineArgumentProvider> jvmArgumentProviders;
     private final MapProperty<String, Object> systemProperties;
@@ -50,32 +52,31 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
     private final Property<String> maxHeapSize;
     private final Property<String> defaultCharacterEncoding;
     private final Property<Boolean> enableAssertions;
-    private final Property<Boolean> debug;
-    private final Provider<Object> emptyProvider;
+    private final JavaDebugOptions debugOptions;
     private Iterable<?> extraJvmArgs;
 
     @Inject
     public DefaultJavaForkOptions(ObjectFactory objectFactory, PathToFileResolver resolver, FileCollectionFactory fileCollectionFactory, JavaDebugOptions debugOptions) {
         super(resolver);
-        options = new JvmOptions(fileCollectionFactory, debugOptions);
+        this.objectFactory = objectFactory;
+        this.fileCollectionFactory = fileCollectionFactory;
         this.jvmArgs = objectFactory.listProperty(String.class);
         this.jvmArgumentProviders = objectFactory.listProperty(CommandLineArgumentProvider.class);
         this.systemProperties = objectFactory.mapProperty(String.class, Object.class);
         this.bootstrapClasspath = objectFactory.fileCollection();
         this.minHeapSize = objectFactory.property(String.class);
         this.maxHeapSize = objectFactory.property(String.class);
-        this.defaultCharacterEncoding = objectFactory.property(String.class).convention(options.getDefaultCharacterEncoding());
-        this.enableAssertions = objectFactory.property(Boolean.class).convention(options.getEnableAssertions());
-        this.debug = objectFactory.property(Boolean.class).convention(options.getDebug());
-        Property<Object> emptyProvider = objectFactory.property(Object.class);
-        emptyProvider.finalizeValue();
-        this.emptyProvider = emptyProvider;
+        this.debugOptions = debugOptions;
+        JvmOptions emptyJvmOptions = new JvmOptions(fileCollectionFactory, objectFactory.newInstance(DefaultJavaDebugOptions.class, objectFactory));
+        this.defaultCharacterEncoding = objectFactory.property(String.class).convention(emptyJvmOptions.getDefaultCharacterEncoding());
+        this.enableAssertions = objectFactory.property(Boolean.class).convention(emptyJvmOptions.getEnableAssertions());
+        this.debugOptions.getEnabled().convention(emptyJvmOptions.getDebug());
     }
 
     @Override
     public Provider<List<String>> getAllJvmArgs() {
         return getJvmArgs().zip(getJvmArgumentProviders(), (args, providers) -> {
-            JvmOptions copy = options.createCopy();
+            JvmOptions copy = new JvmOptions(fileCollectionFactory, objectFactory.newInstance(DefaultJavaDebugOptions.class, objectFactory));
             copy.copyFrom(this);
             return copy.getAllJvmArgs();
         });
@@ -126,7 +127,7 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
         if (value instanceof Provider) {
             ((MapPropertyInternal<String, Object>) getSystemProperties()).insert(name, (Provider<?>) value);
         } else if (value == null) {
-            ((MapPropertyInternal<String, Object>) getSystemProperties()).insert(name, emptyProvider);
+            ((MapPropertyInternal<String, Object>) getSystemProperties()).insert(name, NULL);
         } else {
             ((MapPropertyInternal<String, Object>) getSystemProperties()).insert(name, value);
         }
@@ -166,17 +167,17 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
 
     @Override
     public Property<Boolean> getDebug() {
-        return debug;
+        return getDebugOptions().getEnabled();
     }
 
     @Override
     public JavaDebugOptions getDebugOptions() {
-        return options.getDebugOptions();
+        return debugOptions;
     }
 
     @Override
     public void debugOptions(Action<JavaDebugOptions> action) {
-        action.execute(options.getDebugOptions());
+        action.execute(debugOptions);
     }
 
     @Override
@@ -191,7 +192,7 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
         target.getJvmArgs().empty();
         target.getJvmArgs().set(getJvmArgs());
         target.getSystemProperties().set(getSystemProperties());
-        target.getMinHeapSize().set(getMaxHeapSize());
+        target.getMinHeapSize().set(getMinHeapSize());
         target.getMaxHeapSize().set(getMaxHeapSize());
         target.bootstrapClasspath(getBootstrapClasspath());
         target.getEnableAssertions().set(getEnableAssertions());
@@ -205,8 +206,8 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
         if (hasJvmArgumentProviders(this) || hasJvmArgumentProviders(options)) {
             throw new UnsupportedOperationException("Cannot compare options with jvmArgumentProviders.");
         }
-        return getDebug() == options.getDebug()
-            && getEnableAssertions() == options.getEnableAssertions()
+        return Objects.equals(getDebug().get(), options.getDebug().get())
+            && Objects.equals(getEnableAssertions().get(), options.getEnableAssertions().get())
             && normalized(getExecutable()).equals(normalized(options.getExecutable()))
             && getWorkingDir().equals(options.getWorkingDir())
             && normalized(getDefaultCharacterEncoding().getOrNull()).equals(normalized(options.getDefaultCharacterEncoding().getOrNull()))

@@ -297,7 +297,11 @@ public class JvmOptions {
 
     public void systemProperties(Map<String, ?> properties) {
         for (Map.Entry<String, ?> entry : properties.entrySet()) {
-            systemProperty(entry.getKey(), entry.getValue());
+            if (entry.getValue() instanceof JavaForkOptions.NullValue) {
+                systemProperty(entry.getKey(), null);
+            } else {
+                systemProperty(entry.getKey(), entry.getValue());
+            }
         }
     }
 

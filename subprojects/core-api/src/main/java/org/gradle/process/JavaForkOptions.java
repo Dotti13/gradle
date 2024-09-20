@@ -17,6 +17,8 @@
 package org.gradle.process;
 
 import org.gradle.api.Action;
+import org.gradle.api.Incubating;
+import org.gradle.api.NonNullApi;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.MapProperty;
@@ -32,6 +34,7 @@ import org.gradle.internal.instrumentation.api.annotations.ReplacedAccessor;
 import org.gradle.internal.instrumentation.api.annotations.ReplacedAccessor.AccessorType;
 import org.gradle.internal.instrumentation.api.annotations.ReplacesEagerProperty;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +43,14 @@ import java.util.Map;
  */
 @HasInternalProtocol
 public interface JavaForkOptions extends ProcessForkOptions {
+
+    /**
+     * A null value for system properties.
+     *
+     * @since 9.0
+     */
+    @Incubating
+    NullValue NULL = new NullValue();
 
     /**
      * System properties which will be used for the process.
@@ -215,4 +226,18 @@ public interface JavaForkOptions extends ProcessForkOptions {
      * @return this
      */
     JavaForkOptions copyTo(JavaForkOptions options);
+
+    /**
+     * Class representing null value for system properties.
+     *
+     * @since 9.0
+     */
+    @NonNullApi
+    @Incubating
+    final class NullValue implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        private NullValue() {
+        }
+    }
 }
