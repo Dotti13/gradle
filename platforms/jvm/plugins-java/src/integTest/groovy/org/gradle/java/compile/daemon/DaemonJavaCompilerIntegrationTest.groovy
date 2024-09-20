@@ -56,9 +56,9 @@ class DaemonJavaCompilerIntegrationTest extends AbstractJavaCompilerIntegrationS
                 doLast {
                     assert services.get(WorkerDaemonClientsManager).idleClients.find {
                         new File(it.forkOptions.javaForkOptions.executable).canonicalPath == Jvm.current().javaExecutable.canonicalPath &&
-                        it.forkOptions.javaForkOptions.minHeapSize == "128m" &&
-                        it.forkOptions.javaForkOptions.maxHeapSize == "256m" &&
-                        it.forkOptions.javaForkOptions.systemProperties['foo'] == "bar"
+                        it.forkOptions.javaForkOptions.minHeapSize.getOrNull() == "128m" &&
+                        it.forkOptions.javaForkOptions.maxHeapSize.getOrNull() == "256m" &&
+                        it.forkOptions.javaForkOptions.systemProperties.get()['foo'] == "bar"
                     }
                 }
             }
