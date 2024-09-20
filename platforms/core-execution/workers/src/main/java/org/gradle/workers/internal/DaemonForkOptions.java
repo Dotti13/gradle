@@ -18,17 +18,17 @@ package org.gradle.workers.internal;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import org.gradle.process.JavaForkOptions;
-import org.gradle.process.internal.JavaForkOptionsInternal;
+import org.gradle.process.internal.JvmForkOptions;
 
 public class DaemonForkOptions {
-    private final JavaForkOptionsInternal forkOptions;
+    private final JvmForkOptions forkOptions;
     private final KeepAliveMode keepAliveMode;
     private final ClassLoaderStructure classLoaderStructure;
 
-    DaemonForkOptions(JavaForkOptionsInternal forkOptions,
-                      KeepAliveMode keepAliveMode,
-                      ClassLoaderStructure classLoaderStructure) {
+    DaemonForkOptions(
+        JvmForkOptions forkOptions,
+        KeepAliveMode keepAliveMode,
+        ClassLoaderStructure classLoaderStructure) {
         this.forkOptions = forkOptions;
         this.keepAliveMode = keepAliveMode;
         this.classLoaderStructure = classLoaderStructure;
@@ -38,7 +38,7 @@ public class DaemonForkOptions {
         return keepAliveMode;
     }
 
-    public JavaForkOptions getJavaForkOptions() {
+    public JvmForkOptions getForkOptions() {
         return forkOptions;
     }
 
@@ -56,9 +56,9 @@ public class DaemonForkOptions {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("executable", forkOptions.getExecutable())
-                .add("minHeapSize", forkOptions.getMinHeapSize().getOrNull())
-                .add("maxHeapSize", forkOptions.getMaxHeapSize().getOrNull())
-                .add("jvmArgs", forkOptions.getJvmArgs().getOrNull())
+                .add("minHeapSize", forkOptions.getJvmOptions().getMinHeapSize())
+                .add("maxHeapSize", forkOptions.getJvmOptions().getMaxHeapSize())
+                .add("jvmArgs", forkOptions.getJvmOptions().getJvmArgs())
                 .add("keepAliveMode", keepAliveMode)
                 .toString();
     }

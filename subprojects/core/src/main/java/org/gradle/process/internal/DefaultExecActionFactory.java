@@ -419,8 +419,10 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         private final Property<Boolean> enableAssertions;
         private final Property<Boolean> debug;
         private final MapProperty<String, Object> systemProperties;
+        private final ObjectFactory objectFactory;
 
         public ImmutableJavaForkOptions(ObjectFactory objectFactory, JavaForkOptionsInternal delegate) {
+            this.objectFactory = objectFactory;
             this.delegate = delegate;
             this.defaultCharacterEncoding = objectFactory.property(String.class).convention(delegate.getDefaultCharacterEncoding());
             this.defaultCharacterEncoding.disallowChanges();
@@ -613,6 +615,11 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         @Override
         public void checkDebugConfiguration(Iterable<?> arguments) {
             throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public JvmForkOptions toEffectiveJvmForkOptions() {
+            return delegate.toEffectiveJvmForkOptions();
         }
     }
 }
