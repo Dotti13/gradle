@@ -90,7 +90,7 @@ class ProblemRendererTest extends Specification {
 
         then:
         renderedTextLines[0] == "formatted-problem-details"
-        renderedTextLines[1] == "   with multiple lines"
+        renderedTextLines[1] == "with multiple lines"
     }
 
     def "individual problem with details are displayed"() {
