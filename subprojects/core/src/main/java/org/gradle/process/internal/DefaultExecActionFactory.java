@@ -60,7 +60,6 @@ import org.gradle.process.JavaForkOptions;
 import org.gradle.process.ProcessForkOptions;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -170,7 +169,7 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         DefaultFileCollectionFactory fileCollectionFactory = new DefaultFileCollectionFactory(fileResolver, DefaultTaskDependencyFactory.withNoAssociatedProject(), new DefaultDirectoryFileTreeFactory(), nonCachingPatternSetFactory, PropertyHost.NO_OP, FileSystems.getDefault());
         JavaForkOptionsInternal copy = objectFactory.newInstance(DefaultJavaForkOptions.class, objectFactory, fileResolver, fileCollectionFactory, new DefaultJavaDebugOptions(objectFactory));
         options.copyTo(copy);
-        return objectFactory.newInstance(ImmutableJavaForkOptions.class, copy);
+        return new ImmutableJavaForkOptions(objectFactory, copy);
     }
 
     public JavaExecAction newDecoratedJavaExecAction() {
@@ -410,28 +409,35 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
     }
 
-    static abstract class ImmutableJavaForkOptions implements JavaForkOptionsInternal {
+    static class ImmutableJavaForkOptions implements JavaForkOptionsInternal {
         private final JavaForkOptionsInternal delegate;
+        private final Property<String> defaultCharacterEncoding;
+        private final Property<String> minHeapSize;
+        private final Property<String> maxHeapSize;
+        private final ListProperty<String> jvmArgs;
+        private final ConfigurableFileCollection bootstrapClasspath;
+        private final Property<Boolean> enableAssertions;
+        private final Property<Boolean> debug;
+        private final MapProperty<String, Object> systemProperties;
 
-        @Inject
-        public ImmutableJavaForkOptions(JavaForkOptionsInternal delegate) {
+        public ImmutableJavaForkOptions(ObjectFactory objectFactory, JavaForkOptionsInternal delegate) {
             this.delegate = delegate;
-            getDefaultCharacterEncoding().set(delegate.getDefaultCharacterEncoding());
-            getDefaultCharacterEncoding().disallowChanges();
-            getMinHeapSize().set(delegate.getMinHeapSize());
-            getMinHeapSize().disallowChanges();
-            getMaxHeapSize().set(delegate.getMaxHeapSize());
-            getMaxHeapSize().disallowChanges();
-            getJvmArgs().set(delegate.getJvmArgs());
-            getJvmArgs().disallowChanges();
-            getBootstrapClasspath().setFrom(delegate.getBootstrapClasspath());
-            getBootstrapClasspath().disallowChanges();
-            getEnableAssertions().set(delegate.getEnableAssertions());
-            getEnableAssertions().disallowChanges();
-            getDebug().set(delegate.getDebug());
-            getDebug().disallowChanges();
-            getSystemProperties().set(delegate.getSystemProperties());
-            getSystemProperties().disallowChanges();
+            this.defaultCharacterEncoding = objectFactory.property(String.class).convention(delegate.getDefaultCharacterEncoding());
+            this.defaultCharacterEncoding.disallowChanges();
+            this.minHeapSize = objectFactory.property(String.class).convention(delegate.getMinHeapSize());
+            this.minHeapSize.disallowChanges();
+            this.maxHeapSize = objectFactory.property(String.class).convention(delegate.getMaxHeapSize());
+            this.maxHeapSize.disallowChanges();
+            this.jvmArgs = objectFactory.listProperty(String.class).convention(delegate.getJvmArgs());
+            this.jvmArgs.disallowChanges();
+            this.bootstrapClasspath = objectFactory.fileCollection().from(delegate.getBootstrapClasspath());
+            this.bootstrapClasspath.disallowChanges();
+            this.enableAssertions = objectFactory.property(Boolean.class).convention(delegate.getEnableAssertions());
+            this.enableAssertions.disallowChanges();
+            this.debug = objectFactory.property(Boolean.class).convention(delegate.getDebug());
+            this.debug.disallowChanges();
+            this.systemProperties = objectFactory.mapProperty(String.class, Object.class).convention(delegate.getSystemProperties());
+            this.systemProperties.disallowChanges();
         }
 
         @Override
@@ -445,7 +451,9 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public abstract MapProperty<String, Object> getSystemProperties();
+        public MapProperty<String, Object> getSystemProperties() {
+            return systemProperties;
+        }
 
         @Override
         public void setExecutable(Object executable) {
@@ -483,7 +491,9 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public abstract Property<String> getDefaultCharacterEncoding();
+        public Property<String> getDefaultCharacterEncoding() {
+            return defaultCharacterEncoding;
+        }
 
         @Override
         public ProcessForkOptions workingDir(Object dir) {
@@ -506,7 +516,9 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public abstract Property<String> getMinHeapSize();
+        public Property<String> getMinHeapSize() {
+            return minHeapSize;
+        }
 
         @Override
         public ProcessForkOptions environment(String name, Object value) {
@@ -519,10 +531,14 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public abstract Property<String> getMaxHeapSize();
+        public Property<String> getMaxHeapSize() {
+            return maxHeapSize;
+        }
 
         @Override
-        public abstract ListProperty<String> getJvmArgs();
+        public ListProperty<String> getJvmArgs() {
+            return jvmArgs;
+        }
 
         @Override
         public JavaForkOptions jvmArgs(Iterable<?> arguments) {
@@ -540,7 +556,9 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public abstract ConfigurableFileCollection getBootstrapClasspath();
+        public ConfigurableFileCollection getBootstrapClasspath() {
+            return bootstrapClasspath;
+        }
 
         @Override
         public JavaForkOptions bootstrapClasspath(Object... classpath) {
@@ -548,10 +566,14 @@ public abstract class DefaultExecActionFactory implements ExecFactory {
         }
 
         @Override
-        public abstract Property<Boolean> getEnableAssertions();
+        public Property<Boolean> getEnableAssertions() {
+            return enableAssertions;
+        }
 
         @Override
-        public abstract Property<Boolean> getDebug();
+        public Property<Boolean> getDebug() {
+            return debug;
+        }
 
         @Override
         public JavaDebugOptions getDebugOptions() {
