@@ -44,6 +44,7 @@ class DeleteTaskIntegrationTest extends AbstractIntegrationSpec {
         """
 
         when:
+        executer.withArgument("--no-problems-report")
         succeeds "clean"
 
         then:
