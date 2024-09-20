@@ -63,7 +63,7 @@ public class DefaultJavaForkOptions extends DefaultProcessForkOptions implements
         this.jvmArgs = objectFactory.listProperty(String.class);
         this.jvmArgumentProviders = objectFactory.listProperty(CommandLineArgumentProvider.class);
         this.systemProperties = objectFactory.mapProperty(String.class, Object.class);
-        this.bootstrapClasspath = objectFactory.fileCollection();
+        this.bootstrapClasspath = fileCollectionFactory.configurableFiles();
         this.minHeapSize = objectFactory.property(String.class);
         this.maxHeapSize = objectFactory.property(String.class);
         this.debugOptions = debugOptions;
